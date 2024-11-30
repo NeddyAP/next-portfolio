@@ -71,6 +71,13 @@ export default function Navbar() {
 							))}
 						</div>
 						<Button
+							onClick={() => window.open(resumePath, "_blank")}
+							className="hidden md:flex"
+						>
+							<Download />
+							Resume
+						</Button>
+						<Button
 							variant="ghost"
 							size="icon"
 							onClick={toggleTheme}
@@ -98,7 +105,10 @@ export default function Navbar() {
 									<span className="sr-only">Toggle menu</span>
 								</Button>
 							</SheetTrigger>
-							<SheetContent side="right">
+							<SheetContent
+								side="right"
+								className="bg-slate-900 bg-opacity-85"
+							>
 								<SheetHeader>
 									<SheetTitle>Navigation Menu</SheetTitle>
 								</SheetHeader>
@@ -115,17 +125,17 @@ export default function Navbar() {
 											{item.label}
 										</Link>
 									))}
+									<Button
+										onClick={() =>
+											window.open(resumePath, "_blank")
+										}
+										className="w-full mt-4"
+									>
+										<Download className="h-4 w-4" />
+										Resume
+									</Button>
 								</nav>
 							</SheetContent>
-
-							<Button
-								onClick={() =>
-									window.open(resumePath, "_blank")
-								}
-							>
-								<Download className="mr-2 h-4 w-4" />
-								Resume
-							</Button>
 						</Sheet>
 					</div>
 				</div>

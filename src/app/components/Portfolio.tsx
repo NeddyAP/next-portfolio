@@ -35,32 +35,32 @@ const projects = [
 
 export default function Portfolio() {
 	return (
-		<section id="portfolio" className="space-y-6">
-			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl justify-center flex md:text-left">
+		<section id="portfolio" className="space-y-8 px-4 py-8">
+			<h2 className="text-2xl sm:text-3xl md:text-4xl font-bold tracking-tighter text-center mb-8">
 				Portfolio
 			</h2>
-			<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+			<div className="grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
 				{projects.map((project, index) => (
-					<Card key={index} className="text-center md:text-left">
-						<CardHeader>
+					<Card key={index} className="flex flex-col">
+						<CardHeader className="p-0">
 							<Image
 								src={project.image}
 								alt={project.title}
 								width={400}
 								height={200}
-								className="w-full h-48 object-cover rounded-t-lg"
+								className="w-full h-40 sm:h-48 object-cover rounded-t-lg"
 							/>
 						</CardHeader>
-						<CardContent>
-							<CardTitle className="text-center md:text-left">
+						<CardContent className="flex-1 p-4 text-center">
+							<CardTitle className="text-xl mb-2">
 								{project.title}
 							</CardTitle>
-							<CardDescription className="text-center md:text-left">
+							<CardDescription className="text-sm">
 								{project.description}
 							</CardDescription>
 						</CardContent>
-						<CardFooter className="justify-center md:justify-start">
-							<Button asChild>
+						<CardFooter className="justify-center p-4">
+							<Button asChild className="w-full sm:w-auto">
 								<a
 									href={project.link}
 									target="_blank"
