@@ -69,6 +69,8 @@
 @layer base {
 	* {
 		@apply border-border;
+		scrollbar-width: thin;
+		scrollbar-color: hsl(var(--muted-foreground)) hsl(var(--background));
 	}
 	body {
 		@apply bg-background text-foreground;
@@ -161,13 +163,55 @@
 }
 
 @keyframes nebula {
-  0% { background-position: 0% 0%, 0% 0%; }
-  50% { background-position: 100% 100%, 50% 50%; }
-  100% { background-position: 0% 0%, 0% 0%; }
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 0%; }
 }
 
 @keyframes aurora {
   0% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
+}
+
+@keyframes nebula {
+  0% {
+    background-position: 0% 0%;
+    opacity: 0.5;
+  }
+  50% {
+    background-position: 100% 100%;
+    opacity: 0.8;
+  }
+  100% {
+    background-position: 0% 0%;
+    opacity: 0.5;
+  }
+}
+
+@keyframes aurora {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0.3;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0.6;
+  }
+}
+
+@layer utilities {
+  .animate-nebula {
+    animation: nebula 20s ease infinite;
+  }
+  
+  .animate-aurora {
+    animation: aurora 15s ease infinite;
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-white dark:bg-[#0a0a1f] text-foreground transition-colors duration-300;
+  }
 }
