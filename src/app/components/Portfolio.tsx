@@ -36,7 +36,7 @@ const projects = [
 export default function Portfolio() {
 	return (
 		<section id="portfolio" className="space-y-6">
-			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center md:text-left">
+			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl justify-center flex md:text-left">
 				Portfolio
 			</h2>
 			<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -52,7 +52,9 @@ export default function Portfolio() {
 							/>
 						</CardHeader>
 						<CardContent>
-							<CardTitle className="text-center md:text-left">{project.title}</CardTitle>
+							<CardTitle className="text-center md:text-left">
+								{project.title}
+							</CardTitle>
 							<CardDescription className="text-center md:text-left">
 								{project.description}
 							</CardDescription>

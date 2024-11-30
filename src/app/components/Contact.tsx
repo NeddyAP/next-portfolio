@@ -39,12 +39,12 @@ export default function Contact() {
 
 	return (
 		<section id="contact" className="space-y-6">
-			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center md:text-left">
+			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl  justify-center flex">
 				Contact Me
 			</h2>
 			<form
 				onSubmit={handleSubmit}
-				className="space-y-6 max-w-md mx-auto"
+				className="space-y-6 max-w-md mx-auto shadow-sm bg-slate-950 p-5 border border-slate-800 bg-opacity-85 rounded-lg"
 			>
 				<div className="space-y-2">
 					<label
@@ -93,7 +93,7 @@ export default function Contact() {
 						required
 					/>
 				</div>
-				<div className="flex justify-center md:justify-start">
+				<div className="flex justify-center md:justify-end">
 					<Button type="submit">Send Message</Button>
 				</div>
 			</form>

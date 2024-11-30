@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
+import SpaceBackground from "./components/SpaceBackground";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,11 +26,13 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					<div className="flex flex-col min-h-screen">
-						<Navbar />
-						<main className="flex-grow">{children}</main>
-						<Footer />
-					</div>
+					<SpaceBackground>
+						<div className="flex flex-col min-h-screen">
+							<Navbar />
+							<main className="flex-grow">{children}</main>
+							<Footer />
+						</div>
+					</SpaceBackground>
 				</ThemeProvider>
 			</body>
 		</html>

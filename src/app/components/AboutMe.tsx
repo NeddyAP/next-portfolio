@@ -32,7 +32,7 @@ export default function AboutMe() {
 
 	return (
 		<section id="about" className="space-y-6">
-			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center md:text-left">
+			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl  justify-center flex">
 				About Me
 			</h2>
 			<p className="text-xl text-muted-foreground text-center md:text-left">

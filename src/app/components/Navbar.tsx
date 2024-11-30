@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Menu } from "lucide-react";
+import { Moon, Sun, Menu, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	Sheet,
@@ -16,6 +16,8 @@ import {
 export default function Navbar() {
 	const { setTheme, theme } = useTheme();
 	const [mounted, setMounted] = useState(false);
+
+	const resumePath = "/Neddy_Avgha_Prasetio.pdf";
 
 	useEffect(() => {
 		setMounted(true);
@@ -46,7 +48,7 @@ export default function Navbar() {
 	];
 
 	return (
-		<nav className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md shadow-md">
+		<nav className="sticky top-0 z-50 w-full bg-background/30 backdrop-blur-md shadow-md">
 			<div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-24">
 				<div className="flex items-center justify-between py-4">
 					<Link
@@ -115,6 +117,15 @@ export default function Navbar() {
 									))}
 								</nav>
 							</SheetContent>
+
+							<Button
+								onClick={() =>
+									window.open(resumePath, "_blank")
+								}
+							>
+								<Download className="mr-2 h-4 w-4" />
+								Resume
+							</Button>
 						</Sheet>
 					</div>
 				</div>

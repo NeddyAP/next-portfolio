@@ -31,7 +31,7 @@ export default function Education() {
 
 	return (
 		<section id="education" className="space-y-6">
-			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center md:text-left">
+			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl justify-center flex">
 				Education
 			</h2>
 			<div className="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
@@ -44,7 +44,7 @@ export default function Education() {
 							{item.icon}
 						</div>
 						<div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] bg-white dark:bg-slate-800 p-4 rounded shadow">
-							<Card className="text-center md:text-left">
+							<Card className="transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-lg">
 								<CardHeader>
 									<CardTitle>{item.title}</CardTitle>
 								</CardHeader>

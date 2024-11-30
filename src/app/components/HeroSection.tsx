@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 
 export default function HeroSection() {
 	return (
@@ -14,14 +13,6 @@ export default function HeroSection() {
 						<p className="text-xl text-muted-foreground max-w-[600px]">
 							Web Developer & IT Support
 						</p>
-						<div className="flex gap-4 justify-center lg:justify-start">
-							<Button size="lg">
-								<a href="#contact">Get in Touch</a>
-							</Button>
-							<Button variant="outline" size="lg">
-								<a href="#portfolio">View Work</a>
-							</Button>
-						</div>
 					</div>
 
 					{/* Image */}
