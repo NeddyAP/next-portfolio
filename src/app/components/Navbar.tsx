@@ -6,25 +6,37 @@ import { useTheme } from "next-themes";
 import { Moon, Sun, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+	Sheet,
+	SheetContent,
+	SheetHeader,
+	SheetTitle,
+	SheetTrigger,
+} from "@/components/ui/sheet";
 
 export default function Navbar() {
-	const { setTheme } = useTheme();
-	const [scrolled, setScrolled] = useState(false);
+	const { setTheme, theme } = useTheme();
+	const [mounted, setMounted] = useState(false);
 
 	useEffect(() => {
-		const handleScroll = () => {
-			setScrolled(window.scrollY > 20);
-		};
-
-		window.addEventListener("scroll", handleScroll);
-		return () => window.removeEventListener("scroll", handleScroll);
+		setMounted(true);
 	}, []);
+
+	const handleScroll = (
+		e: React.MouseEvent<HTMLAnchorElement>,
+		href: string
+	) => {
+		e.preventDefault();
+		const targetId = href.replace("#", "");
+		const element = document.getElementById(targetId);
+		element?.scrollIntoView({
+			behavior: "smooth",
+			block: "start",
+		});
+	};
+
+	const toggleTheme = () => {
+		setTheme(theme === "light" ? "dark" : "light");
+	};
 
 	const navItems = [
 		{ href: "#about", label: "About" },
@@ -34,71 +46,45 @@ export default function Navbar() {
 	];
 
 	return (
-		<nav
-			className={`sticky top-0 z-50 w-full transition-all duration-300 ${
-				scrolled
-					? "bg-background/80 backdrop-blur-md shadow-md"
-					: "bg-transparent"
-			}`}
-		>
-			<div className="container mx-auto px-4">
+		<nav className="sticky top-0 z-50 w-full bg-background/80 backdrop-blur-md shadow-md">
+			<div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-24">
 				<div className="flex items-center justify-between py-4">
 					<Link
 						href="/"
-						className={`text-2xl font-bold transition-all duration-300 ${
-							scrolled
-								? "opacity-0 absolute left-4 lg:left-8"
-								: "opacity-100"
-						}`}
+						className="text-2xl font-bold hover:text-primary transition-colors"
 					>
-						Your Name
+						Neddy
 					</Link>
 					<div className="flex items-center space-x-4 ml-auto">
-						<div
-							className={`hidden md:flex items-center space-x-4 transition-all duration-300 ${
-								scrolled
-									? "absolute left-1/2 transform -translate-x-1/2"
-									: ""
-							}`}
-						>
+						<div className="hidden md:flex items-center space-x-4">
 							{navItems.map((item) => (
 								<Link
 									key={item.href}
 									href={item.href}
-									className="text-sm font-medium hover:text-primary transition-colors"
+									onClick={(e) => handleScroll(e, item.href)}
+									className="relative text-sm font-medium transition-colors hover:text-primary after:absolute after:left-0 after:bottom-[-4px] after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-primary after:transition-transform after:duration-300 hover:after:scale-x-100"
 								>
 									{item.label}
 								</Link>
 							))}
 						</div>
-						<DropdownMenu>
-							<DropdownMenuTrigger asChild>
-								<Button variant="ghost" size="icon">
-									<Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-									<Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-									<span className="sr-only">
-										Toggle theme
-									</span>
-								</Button>
-							</DropdownMenuTrigger>
-							<DropdownMenuContent align="end">
-								<DropdownMenuItem
-									onClick={() => setTheme("light")}
-								>
-									Light
-								</DropdownMenuItem>
-								<DropdownMenuItem
-									onClick={() => setTheme("dark")}
-								>
-									Dark
-								</DropdownMenuItem>
-								<DropdownMenuItem
-									onClick={() => setTheme("system")}
-								>
-									System
-								</DropdownMenuItem>
-							</DropdownMenuContent>
-						</DropdownMenu>
+						<Button
+							variant="ghost"
+							size="icon"
+							onClick={toggleTheme}
+							className="hover:bg-transparent"
+						>
+							{mounted && (
+								<>
+									{theme === "light" ? (
+										<Moon className="h-[1.2rem] w-[1.2rem] transition-all" />
+									) : (
+										<Sun className="h-[1.2rem] w-[1.2rem] transition-all" />
+									)}
+								</>
+							)}
+							<span className="sr-only">Toggle theme</span>
+						</Button>
 						<Sheet>
 							<SheetTrigger asChild>
 								<Button
@@ -111,12 +97,18 @@ export default function Navbar() {
 								</Button>
 							</SheetTrigger>
 							<SheetContent side="right">
-								<nav className="flex flex-col space-y-4">
+								<SheetHeader>
+									<SheetTitle>Navigation Menu</SheetTitle>
+								</SheetHeader>
+								<nav className="flex flex-col space-y-4 mt-4">
 									{navItems.map((item) => (
 										<Link
 											key={item.href}
 											href={item.href}
-											className="text-sm font-medium hover:text-primary transition-colors"
+											onClick={(e) =>
+												handleScroll(e, item.href)
+											}
+											className="text-sm font-medium transition-all hover:text-primary hover:translate-x-2"
 										>
 											{item.label}
 										</Link>

@@ -39,7 +39,7 @@ export default function Contact() {
 
 	return (
 		<section id="contact" className="space-y-6">
-			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center md:text-left">
 				Contact Me
 			</h2>
 			<form
@@ -93,7 +93,9 @@ export default function Contact() {
 						required
 					/>
 				</div>
-				<Button type="submit">Send Message</Button>
+				<div className="flex justify-center md:justify-start">
+					<Button type="submit">Send Message</Button>
+				</div>
 			</form>
 		</section>
 	);

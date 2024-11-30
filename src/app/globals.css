@@ -74,3 +74,82 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+@layer utilities {
+  /* Stars animations and essential styles */
+  .stars-small {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    background: transparent;
+    box-shadow: 
+      1489px 1340px #FFF,
+      874px 1086px #FFF,
+      1603px 1527px #FFF,
+      1176px 1726px #FFF,
+      1690px 557px #FFF,
+      1986px 1610px #FFF,
+      178px 19px #FFF,
+      673px 1990px #FFF,
+      1187px 1127px #FFF,
+      1265px 403px #FFF,
+      426px 1220px #FFF;
+    animation: twinkle 5s infinite;
+  }
+
+  .stars-medium {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: transparent;
+    box-shadow: 
+      1489px 1340px #FFF,
+      874px 1086px #FFF,
+      1603px 1527px #FFF,
+      1176px 1726px #FFF,
+      1690px 557px #FFF;
+    animation: twinkle 7s infinite;
+  }
+
+  .stars-large {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: transparent;
+    box-shadow: 
+      1489px 1340px #FFF,
+      874px 1086px #FFF,
+      1603px 1527px #FFF;
+    animation: twinkle 9s infinite;
+  }
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.3; }
+  50% { opacity: 1; }
+  100% { opacity: 0.3; }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes nebula {
+  0% { background-position: 0% 0%, 0% 0%; }
+  50% { background-position: 100% 100%, 50% 50%; }
+  100% { background-position: 0% 0%, 0% 0%; }
+}
+
+@keyframes aurora {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}

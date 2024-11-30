@@ -36,12 +36,12 @@ const projects = [
 export default function Portfolio() {
 	return (
 		<section id="portfolio" className="space-y-6">
-			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">
+			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-center md:text-left">
 				Portfolio
 			</h2>
-			<div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+			<div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 				{projects.map((project, index) => (
-					<Card key={index}>
+					<Card key={index} className="text-center md:text-left">
 						<CardHeader>
 							<Image
 								src={project.image}
@@ -52,12 +52,12 @@ export default function Portfolio() {
 							/>
 						</CardHeader>
 						<CardContent>
-							<CardTitle>{project.title}</CardTitle>
-							<CardDescription>
+							<CardTitle className="text-center md:text-left">{project.title}</CardTitle>
+							<CardDescription className="text-center md:text-left">
 								{project.description}
 							</CardDescription>
 						</CardContent>
-						<CardFooter>
+						<CardFooter className="justify-center md:justify-start">
 							<Button asChild>
 								<a
 									href={project.link}

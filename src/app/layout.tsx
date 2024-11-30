@@ -7,7 +7,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-	title: "Your Name - Portfolio",
+	title: "Neddy AP - Portfolio",
 	description: "Professional portfolio showcasing my work and skills",
 };
 
@@ -25,7 +25,7 @@ export default function RootLayout({
 					enableSystem
 					disableTransitionOnChange
 				>
-					<div className="flex flex-col min-h-screen px-60">
+					<div className="flex flex-col min-h-screen">
 						<Navbar />
 						<main className="flex-grow">{children}</main>
 						<Footer />
