@@ -1,4 +1,5 @@
 import Image from "next/image";
+import profileImage from "@/assets/profile-img.png";
 
 export default function HeroSection() {
 	return (
@@ -17,7 +18,7 @@ export default function HeroSection() {
 					<div className="lg:w-1/2 flex justify-center items-center">
 						<div className="relative w-48 h-48 sm:w-64 sm:h-64 lg:w-96 lg:h-96">
 							<Image
-								src="/placeholder.svg"
+								src={profileImage}
 								alt="Neddy"
 								fill
 								className="rounded-full object-cover border-4 border-primary dark:border-white/20"

@@ -28,13 +28,23 @@ export default function Portfolio() {
 								className="w-full h-40 sm:h-48 object-cover rounded-t-lg"
 							/>
 						</CardHeader>
-						<CardContent className="flex-1 p-4 text-center">
+						<CardContent className="flex-1 p-4 text-center flex flex-col">
 							<CardTitle className="text-xl mb-2">
 								{project.title}
 							</CardTitle>
-							<CardDescription className="text-sm">
+							<CardDescription className="text-sm mb-4">
 								{project.description}
 							</CardDescription>
+							<div className="flex flex-wrap gap-2 justify-center mt-auto">
+								{project.technologies.map((tech, techIndex) => (
+									<span
+										key={techIndex}
+										className="px-2 py-1 text-xs rounded-full bg-primary/10 text-primary inline-block"
+									>
+										{tech}
+									</span>
+								))}
+							</div>
 						</CardContent>
 						<CardFooter className="justify-center p-4">
 							<Button asChild className="w-full sm:w-auto">

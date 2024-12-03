@@ -1,24 +1,102 @@
+import React from 'react';
 import {
-  Lightbulb,
-  Code,
-  Server,
-  Rocket,
-  Book,
   Music,
-  Film,
+  Book,
+  Gamepad,
 } from "lucide-react";
+import {
+  DiGit,
+  DiJava,
+} from "react-icons/di";
+import {
+  SiFirebase,
+  SiPostgresql,
+  SiPhp,
+  SiMysql,
+  SiKotlin,
+  SiSpringboot,
+  SiVisualstudiocode,
+  SiPostman,
+  SiMicrosoftazure,
+  SiJetbrains,
+  SiWindows,
+  SiDocker,
+  SiGithub,
+} from "react-icons/si";
+import type { LucideProps } from "lucide-react";
+import { RiJavascriptFill } from 'react-icons/ri';
+import { FaReact } from 'react-icons/fa6';
+import { FaLaravel } from 'react-icons/fa';
 
-export const skills = [
-  { name: "JavaScript & PHP", icon: Code },
-  { name: "React & Next.js", icon: Rocket },
-  { name: "Node.js & Laravel", icon: Server },
-  { name: "Problem Solving", icon: Lightbulb },
-];
+export interface Skill {
+  name: string;
+  icon: React.ComponentType<LucideProps>;
+}
+
+
+interface AboutInfo {
+  name: string;
+  location: string;
+  education: {
+    degree: string;
+    field: string;
+  };
+  hobbies: string[];
+  quote: {
+    text: string;
+    author: string;
+  };
+}
+
+export const aboutMeText = "Hi Everyone, I am Neddy Avgha Prasetio from Cicurug, Indonesia. I am currently studying for a Bachelor's degree in Computer Science. Apart from coding, some other activities that I love to do!";
+
+export const aboutInfo: AboutInfo = {
+  name: "Neddy Avgha Prasetio",
+  location: "Cicurug, Indonesia",
+  education: {
+    degree: "Bachelor's",
+    field: "Computer Science",
+  },
+  hobbies: [
+    "Playing Games",
+    "Reading Comics",
+    "Watching Movies",
+  ],
+  quote: {
+    text: "Simple But Better!",
+    author: "Neddy Avgha Prasetio",
+  },
+};
+
 
 export const hobbies = [
   { name: "Music", icon: Music },
-  { name: "Comic Reading", icon: Book },
-  { name: "Watch Movie", icon: Film },
+  { name: "Reading Comic", icon: Book },
+  { name: "Playing Games", icon: Gamepad },
 ];
 
-export const aboutMeText = "I'm a passionate web developer with a keen eye for design and a love for creating intuitive, user-friendly interfaces. With expertise in modern web technologies, I strive to build performant and scalable applications that make a difference.";
+export const skillset = [
+  { name: "PHP", icon: SiPhp },
+  { name: "JavaScript", icon: RiJavascriptFill },
+  { name: "Java", icon: DiJava },
+  { name: "Kotlin", icon: SiKotlin },
+  { name: "Laravel", icon: FaLaravel },
+  { name: "React", icon: FaReact },
+  { name: "Spring Boot", icon: SiSpringboot },
+  { name: "Git", icon: DiGit },
+  { name: "Firebase", icon: SiFirebase },
+  { name: "PostgreSQL", icon: SiPostgresql },
+  { name: "MySQL", icon: SiMysql },
+];
+
+export const tools = [
+  { name: "VS Code", icon: SiVisualstudiocode },
+  { name: "Postman", icon: SiPostman },
+  { name: "Azure", icon: SiMicrosoftazure },
+  { name: "JetBrains", icon: SiJetbrains },
+  { name: "Windows", icon: SiWindows },
+  { name: "Docker", icon: SiDocker },
+  { name: "GitHub", icon: SiGithub },
+];
+
+export const githubUsername = "neddy1298";
