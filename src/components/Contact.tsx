@@ -26,9 +26,9 @@ export default function Contact() {
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		// Here you would typically send the form data to a server or API
+		
 		console.log("Form submitted:", formData);
-		// Reset form after submission
+		
 		setFormData({ name: "", email: "", message: "" });
 		toast({
 			title: "Message sent!",

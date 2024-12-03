@@ -12,12 +12,11 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import { navItems, resumePath, siteConfig } from "@/data/navbarData";
 
 export default function Navbar() {
 	const { setTheme, theme } = useTheme();
 	const [mounted, setMounted] = useState(false);
-
-	const resumePath = "/Neddy_Avgha_Prasetio.pdf";
 
 	useEffect(() => {
 		setMounted(true);
@@ -40,13 +39,6 @@ export default function Navbar() {
 		setTheme(theme === "light" ? "dark" : "light");
 	};
 
-	const navItems = [
-		{ href: "#about", label: "About" },
-		{ href: "#education", label: "Education" },
-		{ href: "#portfolio", label: "Portfolio" },
-		{ href: "#contact", label: "Contact" },
-	];
-
 	return (
 		<nav className="sticky top-0 z-50 w-full bg-background/30 backdrop-blur-md shadow-md">
 			<div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-24">
@@ -55,7 +47,7 @@ export default function Navbar() {
 						href="/"
 						className="text-2xl font-bold hover:text-primary transition-colors"
 					>
-						Neddy
+						{siteConfig.name}
 					</Link>
 					<div className="flex items-center space-x-4 ml-auto">
 						<div className="hidden md:flex items-center space-x-4">

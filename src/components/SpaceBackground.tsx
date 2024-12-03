@@ -14,7 +14,7 @@ export default function SpaceBackground({
 	}, []);
 
 	if (!isMounted) {
-		return <>{children}</>;  // Return children while not mounted to prevent layout shift
+		return <>{children}</>;  
 	}
 
 	return (
