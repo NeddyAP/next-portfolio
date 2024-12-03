@@ -3,7 +3,7 @@ import profileImage from "@/assets/profile-img.png";
 
 export default function HeroSection() {
 	return (
-		<section className="min-h-[calc(100vh-4rem)] flex items-center justify-center relative">
+		<section className="min-h-[calc(100vh-4rem)] flex items-center justify-center relative my-[-80]">
 			<div className="container mx-auto">
 				<div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12">
 					<div className="lg:w-1/2 space-y-8 text-center lg:text-left">

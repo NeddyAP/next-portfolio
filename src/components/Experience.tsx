@@ -1,14 +1,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { educationItems } from "@/data/educationData";
+import { experienceItems } from "@/data/experienceData";
 
-export default function Education() {
+export default function Experience() {
 	return (
-		<section id="education" className="space-y-6">
+		<section id="experience" className="space-y-6">
 			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl justify-center flex">
-				Education
+				Experience
 			</h2>
 			<div className="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
-				{educationItems.map((item, index) => {
+				{experienceItems.map((item, index) => {
 					const Icon = item.icon;
 					return (
 						<div
@@ -25,12 +25,12 @@ export default function Education() {
 									</CardHeader>
 									<CardContent>
 										<p className="font-semibold">
-											{item.institution}
+											{item.organization}
 										</p>
 										<p className="text-sm text-muted-foreground">
 											{item.period}
 										</p>
-										<p className="mt-2">{item.details}</p>
+										<p className="mt-2">{item.description}</p>
 									</CardContent>
 								</Card>
 							</div>
