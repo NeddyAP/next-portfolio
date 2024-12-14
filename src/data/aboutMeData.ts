@@ -109,4 +109,4 @@ export const tools = [
   { name: "GitHub", icon: SiGithub },
 ];
 
-export const githubUsername = "neddy1298";
+export const githubUsername = "neddyap";

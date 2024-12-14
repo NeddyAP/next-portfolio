@@ -4,7 +4,7 @@ export const socialLinks = [
   {
     name: "GitHub",
     icon: Github,
-    url: "https://github.com/neddy1298",
+    url: "https://github.com/neddyap",
   },
   {
     name: "LinkedIn",
