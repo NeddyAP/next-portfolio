@@ -14,11 +14,8 @@ import {
   SiPhp,
   SiMysql,
   SiKotlin,
-  SiVisualstudiocode,
   SiPostman,
-  SiMicrosoftazure,
   SiJetbrains,
-  SiWindows,
   SiDocker,
   SiGithub,
 } from "react-icons/si";
@@ -27,6 +24,8 @@ import { RiJavascriptFill } from 'react-icons/ri';
 import { FaReact } from 'react-icons/fa6';
 import { FaLaravel } from 'react-icons/fa';
 import { AiOutlineLinux } from 'react-icons/ai';
+import { VscCode } from 'react-icons/vsc';
+import { BiLogoVisualStudio, BiWindows } from 'react-icons/bi';
 
 export interface Skill {
   name: string;
@@ -101,11 +100,10 @@ export const skillset = [
 ];
 
 export const tools = [
-  { name: "VS Code", icon: SiVisualstudiocode },
+  { name: "VS Code", icon: BiLogoVisualStudio },
   { name: "Postman", icon: SiPostman },
-  { name: "Azure", icon: SiMicrosoftazure },
   { name: "JetBrains", icon: SiJetbrains },
-  { name: "Windows", icon: SiWindows },
+  { name: "Windows", icon: BiWindows },
   { name: "Linux", icon: AiOutlineLinux },
   { name: "Docker", icon: SiDocker },
   { name: "GitHub", icon: SiGithub },
