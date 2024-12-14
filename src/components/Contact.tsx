@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import emailjs from "@emailjs/browser";
+import { toast } from "@/hooks/use-toast";
 
 export default function Contact() {
 	const [formData, setFormData] = useState({
@@ -12,7 +13,8 @@ export default function Contact() {
 		email: "",
 		message: "",
 	});
-	const { toast } = useToast();
+	const [isLoading, setIsLoading] = useState(false);
+	const [cooldown, setCooldown] = useState(0);
 
 	const handleChange = (
 		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -24,17 +26,72 @@ export default function Contact() {
 		}));
 	};
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+	useEffect(() => {
+		emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!);
+	}, []);
+
+	useEffect(() => {
+		if (cooldown > 0) {
+			const timer = setTimeout(() => {
+				setCooldown(cooldown - 1);
+			}, 1000);
+			return () => clearTimeout(timer);
+		}
+	}, [cooldown]);
+
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		
-		console.log("Form submitted:", formData);
-		
-		setFormData({ name: "", email: "", message: "" });
-		toast({
-			title: "Message sent!",
-			description:
-				"Thank you for your message. I'll get back to you soon.",
-		});
+
+		if (cooldown > 0) {
+			toast({
+				variant: "destructive",
+				title: "Please wait",
+				description: `You can send another message in ${cooldown} seconds`,
+				className: "bg-white dark:bg-slate-950",
+			});
+			return;
+		}
+
+		setIsLoading(true);
+		try {
+			await emailjs.send(
+				process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+				process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+				{
+					from_name: formData.name,
+					from_email: formData.email,
+					message: formData.message,
+				}
+			);
+
+			setFormData({ name: "", email: "", message: "" });
+			setCooldown(60);
+			toast({
+				variant: "default",
+				title: "✅ Success!",
+				description:
+					"Thank you for your message. I'll get back to you soon.",
+				className:
+					"bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-800",
+			});
+		} catch (error) {
+			console.error("Error sending email:", error);
+			toast({
+				variant: "destructive",
+				title: "❌ Error",
+				description: "Failed to send message. Please try again later.",
+				className:
+					"bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-800",
+			});
+		} finally {
+			setIsLoading(false);
+		}
+	};
+
+	const getButtonText = () => {
+		if (isLoading) return "Sending...";
+		if (cooldown > 0) return `Wait ${cooldown}s`;
+		return "Send Message";
 	};
 
 	return (
@@ -94,7 +151,15 @@ export default function Contact() {
 					/>
 				</div>
 				<div className="flex justify-center md:justify-end">
-					<Button type="submit">Send Message</Button>
+					<Button
+						type="submit"
+						disabled={isLoading || cooldown > 0}
+						className={`min-w-[150px] ${
+							cooldown > 0 ? "bg-gray-500" : ""
+						}`}
+					>
+						{getButtonText()}
+					</Button>
 				</div>
 			</form>
 		</section>

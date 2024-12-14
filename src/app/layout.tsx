@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { ThemeProvider } from "../components/ThemeProvider";
 import SpaceBackground from "../components/SpaceBackground";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -34,6 +35,7 @@ export default function RootLayout({
 						</div>
 					</SpaceBackground>
 				</ThemeProvider>
+				<Toaster />
 			</body>
 		</html>
 	);
