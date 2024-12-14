@@ -28,7 +28,19 @@ jobs:
     # Build job
     build:
         runs-on: ubuntu-latest
+        environment: github-pages  # Add environment context
+        env:
+            NEXT_PUBLIC_EMAILJS_SERVICE_ID: ${{ secrets.EMAILJS_SERVICE_ID }}
+            NEXT_PUBLIC_EMAILJS_TEMPLATE_ID: ${{ secrets.EMAILJS_TEMPLATE_ID }}
+            NEXT_PUBLIC_EMAILJS_PUBLIC_KEY: ${{ secrets.EMAILJS_PUBLIC_KEY }}
         steps:
+            # Pre-build checks
+            - name: Check required secrets
+              run: |
+                if [ -z "$NEXT_PUBLIC_EMAILJS_SERVICE_ID" ] || [ -z "$NEXT_PUBLIC_EMAILJS_TEMPLATE_ID" ] || [ -z "$NEXT_PUBLIC_EMAILJS_PUBLIC_KEY" ]; then
+                  echo "Error: Missing required secrets"
+                  exit 1
+                fi
             - name: Checkout
               uses: actions/checkout@v4
             - name: Detect package manager
@@ -51,7 +63,7 @@ jobs:
             - name: Setup Node
               uses: actions/setup-node@v4
               with:
-                  node-version: "22"
+                  node-version: "20"
                   cache: ${{ steps.detect-package-manager.outputs.manager }}
             - name: Setup Pages
               uses: actions/configure-pages@v5
@@ -74,10 +86,6 @@ jobs:
             - name: Install dependencies
               run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
             - name: Build with Next.js
-              env:
-                  NEXT_PUBLIC_EMAILJS_SERVICE_ID: ${{ secrets.EMAILJS_SERVICE_ID }}
-                  NEXT_PUBLIC_EMAILJS_TEMPLATE_ID: ${{ secrets.EMAILJS_TEMPLATE_ID }}
-                  NEXT_PUBLIC_EMAILJS_PUBLIC_KEY: ${{ secrets.EMAILJS_PUBLIC_KEY }}
               run: ${{ steps.detect-package-manager.outputs.runner }} next build
             - name: Upload artifact
               uses: actions/upload-pages-artifact@v3

@@ -7,6 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import emailjs from "@emailjs/browser";
 import { toast } from "@/hooks/use-toast";
 
+const isValidEmail = (email: string) => {
+	const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+	return emailRegex.test(email);
+};
+
 export default function Contact() {
 	const [formData, setFormData] = useState({
 		name: "",
@@ -41,6 +46,17 @@ export default function Contact() {
 
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
+
+		if (!isValidEmail(formData.email)) {
+			toast({
+				variant: "destructive",
+				title: "Invalid Email",
+				description: "Please enter a valid email address",
+				className:
+					"bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-800",
+			});
+			return;
+		}
 
 		if (cooldown > 0) {
 			toast({
