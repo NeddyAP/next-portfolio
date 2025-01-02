@@ -1,3 +1,5 @@
+import { getBasePath } from "@/utils/path";
+
 export const navItems = [
 	{ href: "#about", label: "About" },
 	{ href: "#experience", label: "Experience" },
@@ -5,7 +7,7 @@ export const navItems = [
 	{ href: "#contact", label: "Contact" },
 ];
 
-export const resumePath = "/Neddy_Avgha_Prasetio.pdf";
+export const resumePath = `${getBasePath()}/Neddy_Avgha_Prasetio.pdf`;
 
 export const siteConfig = {
 	name: "Neddy",
