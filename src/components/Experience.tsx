@@ -1,3 +1,6 @@
+"use client";
+
+import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { experienceItems } from "@/data/experienceData";
 
@@ -11,9 +14,16 @@ export default function Experience() {
 				{experienceItems.map((item, index) => {
 					const Icon = item.icon;
 					return (
-						<div
+						<motion.div
 							key={index}
 							className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active"
+							initial={{
+								opacity: 0,
+								x: index % 2 === 0 ? 50 : -50,
+							}}
+							whileInView={{ opacity: 1, x: 0 }}
+							viewport={{ once: true }}
+							transition={{ duration: 0.5, delay: index * 0.1 }}
 						>
 							<div className="flex items-center justify-center w-10 h-10 rounded-full border border-white bg-slate-300 group-[.is-active]:bg-emerald-500 text-slate-500 group-[.is-active]:text-emerald-50 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2">
 								<Icon className="w-6 h-6" />
@@ -30,11 +40,13 @@ export default function Experience() {
 										<p className="text-sm text-muted-foreground">
 											{item.period}
 										</p>
-										<p className="mt-2">{item.description}</p>
+										<p className="mt-2">
+											{item.description}
+										</p>
 									</CardContent>
 								</Card>
 							</div>
-						</div>
+						</motion.div>
 					);
 				})}
 			</div>

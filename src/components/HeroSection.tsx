@@ -3,7 +3,7 @@ import profileImage from "@/assets/profile-img.png";
 
 export default function HeroSection() {
 	return (
-		<section className="min-h-[calc(100vh-4rem)] flex items-center justify-center relative">
+<section className="flex items-center justify-center relative py-20 lg:py-32">
 			<div className="container mx-auto">
 				<div className="flex flex-col-reverse lg:flex-row items-center justify-between gap-12">
 					<div className="lg:w-1/2 space-y-8 text-center lg:text-left">
@@ -19,8 +19,9 @@ export default function HeroSection() {
 						<div className="relative w-48 h-48 sm:w-64 sm:h-64 lg:w-96 lg:h-96">
 							<Image
 								src={profileImage}
-								alt="Neddy"
+								alt="Neddy Avgha Prasetio profile picture"
 								fill
+								sizes="(max-width: 640px) 12rem, (max-width: 1024px) 16rem, 24rem"
 								className="rounded-full object-cover border-4 border-primary dark:border-white/20"
 								priority
 							/>

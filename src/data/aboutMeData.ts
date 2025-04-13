@@ -1,8 +1,7 @@
 import React from "react";
 import { Music, Book, Gamepad } from "lucide-react";
-import { DiGit, DiJava } from "react-icons/di";
+import { DiGit, DiWindows } from "react-icons/di";
 import {
-	SiFirebase,
 	SiPostgresql,
 	SiPhp,
 	SiMysql,
@@ -13,11 +12,11 @@ import {
 	SiGithub,
 } from "react-icons/si";
 import type { LucideProps } from "lucide-react";
-import { RiJavascriptFill } from "react-icons/ri";
+import { RiTailwindCssFill } from "react-icons/ri";
 import { FaReact } from "react-icons/fa6";
 import { FaLaravel } from "react-icons/fa";
 import { AiOutlineLinux } from "react-icons/ai";
-import { BiLogoVisualStudio, BiWindows } from "react-icons/bi";
+import { BiLogoJavascript, BiLogoVisualStudio } from "react-icons/bi";
 
 export interface Skill {
 	name: string;
@@ -39,7 +38,7 @@ interface AboutInfo {
 }
 
 const calculateAge = () => {
-	const birthDate = new Date(2001, 9, 16); // Month is 0-based, so 9 = October
+	const birthDate = new Date(2001, 9, 16);
 	const today = new Date();
 	let age = today.getFullYear() - birthDate.getFullYear();
 	const monthDiff = today.getMonth() - birthDate.getMonth();
@@ -55,10 +54,7 @@ const calculateAge = () => {
 };
 
 const age = calculateAge();
-export const aboutMeText =
-	"Hi, I am Neddy Avgha Prasetio from Cicurug, am " +
-	age +
-	" years old from Bogor, Indonesia. I am currently studying for a Bachelor's degree in Computer Science. Apart from coding, some other activities that I love to do!";
+export const aboutMeText = `Hello! I'm Neddy Avgha Prasetio, a ${age}-year-old Computer Science student from Cicurug, Indonesia. While I'm passionate about coding and pursuing my Bachelor's degree, I also love diving into other activities!`;
 
 export const aboutInfo: AboutInfo = {
 	name: "Neddy Avgha Prasetio",
@@ -82,14 +78,13 @@ export const hobbies = [
 
 export const skillset = [
 	{ name: "PHP", icon: SiPhp },
-	{ name: "JavaScript", icon: RiJavascriptFill },
-	{ name: "Java", icon: DiJava },
-	{ name: "Kotlin", icon: SiKotlin },
 	{ name: "Laravel", icon: FaLaravel },
+	{ name: "JavaScript", icon: BiLogoJavascript },
+	{ name: "Tailwind CSS", icon: RiTailwindCssFill },
 	{ name: "React", icon: FaReact },
+	{ name: "Kotlin", icon: SiKotlin },
 	{ name: "Git", icon: DiGit },
 	{ name: "MySQL", icon: SiMysql },
-	{ name: "Firebase", icon: SiFirebase },
 	{ name: "PostgreSQL", icon: SiPostgresql },
 ];
 
@@ -97,7 +92,7 @@ export const tools = [
 	{ name: "VS Code", icon: BiLogoVisualStudio },
 	{ name: "Postman", icon: SiPostman },
 	{ name: "JetBrains", icon: SiJetbrains },
-	{ name: "Windows", icon: BiWindows },
+	{ name: "Windows", icon: DiWindows },
 	{ name: "Linux", icon: AiOutlineLinux },
 	{ name: "Docker", icon: SiDocker },
 	{ name: "GitHub", icon: SiGithub },
