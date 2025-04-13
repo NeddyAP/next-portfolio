@@ -115,69 +115,108 @@ export default function Contact() {
 			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl justify-center flex text-slate-900 dark:text-slate-100">
 				Contact Me
 			</h2>
-			<form
-				onSubmit={handleSubmit}
-				className="space-y-6 max-w-md mx-auto shadow-sm bg-white dark:bg-slate-950 p-5 border border-slate-200 dark:border-slate-800 rounded-lg"
-			>
-				<div className="space-y-2">
-					<label
-						htmlFor="name"
-						className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-100"
-					>
-						Name
-					</label>
-					<Input
-						type="text"
-						id="name"
-						name="name"
-						value={formData.name}
-						onChange={handleChange}
-						required
-					/>
+			{/* Two-column layout container */}
+			<div className="flex flex-col md:flex-row gap-8 lg:gap-12 max-w-4xl mx-auto">
+				{/* Left Column: Contact Info */}
+				<div className="md:w-1/3 space-y-4">
+					<h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
+						Get in Touch
+					</h3>
+					<p className="text-slate-600 dark:text-slate-400">
+						Feel free to reach out directly via email or phone.
+					</p>
+					<div className="space-y-2">
+						<p className="text-slate-600 dark:text-slate-400">
+							<strong>Email:</strong>{" "}
+							<a
+								href="mailto:neddy.prasetio@gmail.com"
+								className="underline hover:text-slate-900 dark:hover:text-slate-100"
+							>
+								neddy.prasetio@gmail.com
+							</a>
+						</p>
+						<p className="text-slate-600 dark:text-slate-400">
+							<strong>Phone:</strong>{" "}
+							<a
+								href="tel:+6282125241014"
+								className="underline hover:text-slate-900 dark:hover:text-slate-100"
+							>
+								+62 821-2524-1014
+							</a>
+						</p>
+					</div>
+					<p className="text-slate-600 dark:text-slate-400">
+						Alternatively, use the form to send me a message.
+					</p>
 				</div>
-				<div className="space-y-2">
-					<label
-						htmlFor="email"
-						className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-100"
+
+				{/* Right Column: Contact Form */}
+				<div className="md:w-2/3">
+					<form
+						onSubmit={handleSubmit}
+						className="space-y-6 shadow-sm bg-white dark:bg-slate-950 p-5 border border-slate-200 dark:border-slate-800 rounded-lg"
 					>
-						Email
-					</label>
-					<Input
-						type="email"
-						id="email"
-						name="email"
-						value={formData.email}
-						onChange={handleChange}
-						required
-					/>
+						<div className="space-y-2">
+							<label
+								htmlFor="name"
+								className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-100"
+							>
+								Name
+							</label>
+							<Input
+								type="text"
+								id="name"
+								name="name"
+								value={formData.name}
+								onChange={handleChange}
+								required
+							/>
+						</div>
+						<div className="space-y-2">
+							<label
+								htmlFor="email"
+								className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-100"
+							>
+								Email
+							</label>
+							<Input
+								type="email"
+								id="email"
+								name="email"
+								value={formData.email}
+								onChange={handleChange}
+								required
+							/>
+						</div>
+						<div className="space-y-2">
+							<label
+								htmlFor="message"
+								className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-100"
+							>
+								Message
+							</label>
+							<Textarea
+								id="message"
+								name="message"
+								value={formData.message}
+								onChange={handleChange}
+								required
+							/>
+						</div>
+						<div className="flex justify-end">
+							<Button
+								type="submit"
+								disabled={isLoading || cooldown > 0}
+								className={`min-w-[150px] ${
+									cooldown > 0 ? "bg-gray-500" : ""
+								}`}
+							>
+								{getButtonText()}
+							</Button>
+						</div>
+					</form>
 				</div>
-				<div className="space-y-2">
-					<label
-						htmlFor="message"
-						className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-100"
-					>
-						Message
-					</label>
-					<Textarea
-						id="message"
-						name="message"
-						value={formData.message}
-						onChange={handleChange}
-						required
-					/>
-				</div>
-				<div className="flex justify-center md:justify-end">
-					<Button
-						type="submit"
-						disabled={isLoading || cooldown > 0}
-						className={`min-w-[150px] ${
-							cooldown > 0 ? "bg-gray-500" : ""
-						}`}
-					>
-						{getButtonText()}
-					</Button>
-				</div>
-			</form>
+			</div>
 		</section>
 	);
 }
