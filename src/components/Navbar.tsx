@@ -17,9 +17,20 @@ import { navItems, resumePath, siteConfig } from "@/data/navbarData";
 export default function Navbar() {
 	const { setTheme, theme } = useTheme();
 	const [mounted, setMounted] = useState(false);
+	const [scrolled, setScrolled] = useState(false);
 
 	useEffect(() => {
 		setMounted(true);
+
+		const handleScroll = () => {
+			setScrolled(window.scrollY > 50);
+		};
+
+		window.addEventListener("scroll", handleScroll);
+
+		handleScroll();
+
+		return () => window.removeEventListener("scroll", handleScroll);
 	}, []);
 
 	const handleScroll = (
@@ -40,9 +51,19 @@ export default function Navbar() {
 	};
 
 	return (
-		<nav className="sticky top-0 z-50 w-full bg-background/30 backdrop-blur-md shadow-md">
+		<nav
+			className={`
+				sticky top-0 z-50 w-full transition-all duration-300 ease-in-out 
+				${
+					scrolled
+						? "bg-background/80 backdrop-blur-lg shadow-lg"
+						: "bg-background/30 backdrop-blur-md shadow-md"
+				}
+			`}
+		>
 			<div className="container mx-auto px-4 md:px-8 lg:px-16 xl:px-24">
-				<div className="flex items-center justify-between">
+				{/* Added fixed height to prevent layout shift */}
+				<div className="flex h-16 items-center justify-between">
 					<Link
 						href="/"
 						className="text-2xl font-bold hover:text-primary transition-colors"
