@@ -6,13 +6,19 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import emailjs from "@emailjs/browser";
 import { toast } from "@/hooks/use-toast";
+import { Database } from "@/types/supabase";
 
 const isValidEmail = (email: string) => {
 	const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
 	return emailRegex.test(email);
 };
 
-export default function Contact() {
+// Define props for the component
+interface AboutMeProps {
+	aboutData: Database["public"]["Tables"]["about_me"]["Row"] | null;
+}
+
+export default function Contact({ aboutData }: AboutMeProps) {
 	const [formData, setFormData] = useState({
 		name: "",
 		email: "",
@@ -129,10 +135,14 @@ export default function Contact() {
 						<p className="text-slate-600 dark:text-slate-400">
 							<strong>Email:</strong>{" "}
 							<a
-								href="mailto:neddy.prasetio@gmail.com"
+								href={`mailto:${
+									aboutData?.contact_email ||
+									"neddy.prasetio@gmail.com"
+								}`}
 								className="underline hover:text-slate-900 dark:hover:text-slate-100"
 							>
-								neddy.prasetio@gmail.com
+								{aboutData?.contact_email ||
+									"neddy.prasetio@gmail.com"}
 							</a>
 						</p>
 						<p className="text-slate-600 dark:text-slate-400">
