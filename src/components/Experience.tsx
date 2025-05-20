@@ -9,7 +9,6 @@ import {
 	SheetContent,
 	SheetHeader,
 	SheetTitle,
-	SheetTrigger,
 } from "@/components/ui/sheet"; // Added Sheet
 import {
 	Dialog,
@@ -18,9 +17,8 @@ import {
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,
-	DialogTrigger,
 } from "@/components/ui/dialog"; // Added Dialog
-import { Database, Tables } from "@/types/supabase"; // Import Supabase types
+import { Tables } from "@/types/supabase"; // Import Supabase types
 import { getIcon } from "@/lib/iconMap";
 import {
 	Briefcase,
@@ -114,10 +112,14 @@ export default function Experience({ experienceData }: ExperienceProps) {
 			router.refresh(); // Revalidate data
 			setIsDeleteDialogOpen(false);
 			setExperienceToDelete(null);
-		} catch (error: any) {
+		} catch (error: unknown) {
+			const errorMessage =
+				error instanceof Error
+					? error.message
+					: "An unknown error occurred.";
 			toast({
 				title: "Error",
-				description: error.message || "Could not delete experience.",
+				description: errorMessage,
 				variant: "destructive",
 			});
 		}
@@ -310,10 +312,11 @@ export default function Experience({ experienceData }: ExperienceProps) {
 					<DialogHeader>
 						<DialogTitle>Confirm Deletion</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to delete the experience: "
+							Are you sure you want to delete the experience:
+							&quot;
 							{experienceToDelete?.job_title} at{" "}
-							{experienceToDelete?.company_name}"? This action
-							cannot be undone.
+							{experienceToDelete?.company_name}&quot;? This
+							action cannot be undone.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>

@@ -143,13 +143,14 @@ export function EditExperienceForm({
 			if (onOpenChange) {
 				onOpenChange(false); // Close the sheet/dialog
 			}
-		} catch (error: any) {
-			console.error("Error saving experience:", error);
+		} catch (error: unknown) {
+			const errorMessage =
+				error instanceof Error
+					? error.message
+					: "An unknown error occurred.";
 			toast({
 				title: "Error",
-				description:
-					error.message ||
-					"Could not save experience. Please try again.",
+				description: errorMessage,
 				variant: "destructive",
 			});
 		} finally {
@@ -205,7 +206,7 @@ export function EditExperienceForm({
 				</div>
 				<div className="space-y-2">
 					<Label htmlFor="endDate">
-						End Date (Optional, or 'Present')
+						End Date (Optional, or &apos;Present&apos;)
 					</Label>
 					<Input
 						id="endDate"
