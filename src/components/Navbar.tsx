@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTheme } from "next-themes";
-import { Moon, Sun, Menu, Download, LogIn, LogOut } from "lucide-react"; // Added LogIn, LogOut
+import { Moon, Sun, Menu, Download, LogOut } from "lucide-react"; // LogIn icon removed
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -12,26 +12,26 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogDescription,
-  // DialogFooter, // Removed as it's unused
-} from "@/components/ui/dialog"; // Added Dialog components
-import { useAuth } from "@/contexts/AuthContext"; // Added useAuth
-import { LoginForm } from "@/components/LoginForm"; // Added LoginForm
-import { navItems, resumePath, siteConfig } from "@/data/navbarData"; // resumePath will be replaced by dynamic one
-import { supabaseBrowserClient } from "@/lib/supabaseClient"; // Import Supabase client
+// Dialog components are no longer needed here if login dialog is fully moved
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogHeader,
+//   DialogTitle,
+//   DialogTrigger,
+//   DialogDescription,
+// } from "@/components/ui/dialog";
+import { useAuth } from "@/contexts/AuthContext";
+// LoginForm import removed
+import { navItems, resumePath, siteConfig } from "@/data/navbarData";
+import { supabaseBrowserClient } from "@/lib/supabaseClient";
 
 export default function Navbar() {
   const { setTheme, theme } = useTheme();
-  const { user, signOut, isLoading: authIsLoading } = useAuth(); // Get user and signOut from AuthContext
+  const { user, signOut, isLoading: authIsLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false); // State for login dialog
+  // isLoginDialogOpen state removed
   const [dynamicResumeUrl, setDynamicResumeUrl] = useState<string | null>(null);
   const [isLoadingResumeUrl, setIsLoadingResumeUrl] = useState(true);
 
@@ -41,25 +41,23 @@ export default function Navbar() {
     const fetchResumeUrl = async () => {
       setIsLoadingResumeUrl(true);
       try {
-        // Assuming there's one 'about_me' entry or we take the first one.
-        // Adjust if a specific user's resume is needed and user context is available for query.
         const { data, error } = await supabaseBrowserClient
           .from("about_me")
           .select("resume_url")
-          .limit(1) // Fetches the first record
-          .single(); // Assumes a single record or you want the first one
+          .limit(1)
+          .single();
 
         if (error) {
           console.error("Error fetching resume URL:", error);
-          setDynamicResumeUrl(resumePath); // Fallback to static path on error
+          setDynamicResumeUrl(resumePath);
         } else if (data && data.resume_url) {
           setDynamicResumeUrl(data.resume_url);
         } else {
-          setDynamicResumeUrl(resumePath); // Fallback if no URL found
+          setDynamicResumeUrl(resumePath);
         }
       } catch (e) {
         console.error("Exception fetching resume URL:", e);
-        setDynamicResumeUrl(resumePath); // Fallback
+        setDynamicResumeUrl(resumePath);
       } finally {
         setIsLoadingResumeUrl(false);
       }
@@ -67,17 +65,17 @@ export default function Navbar() {
 
     fetchResumeUrl();
 
-    const handleScrollEvent = () => { // Renamed to avoid conflict with function name
+    const handleScrollEvent = () => {
       setScrolled(window.scrollY > 50);
     };
 
     window.addEventListener("scroll", handleScrollEvent);
-    handleScrollEvent(); // Initial check
+    handleScrollEvent();
 
     return () => window.removeEventListener("scroll", handleScrollEvent);
   }, []);
 
-  const handleLinkScroll = ( // Renamed to avoid conflict with state setter
+  const handleLinkScroll = (
     e: React.MouseEvent<HTMLAnchorElement>,
     href: string
   ) => {
@@ -88,19 +86,13 @@ export default function Navbar() {
       behavior: "smooth",
       block: "start",
     });
-    // Close sheet if open (assuming Sheet closes on link click)
   };
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
   };
 
-  // Close dialog when login is successful (user object becomes available)
-  useEffect(() => {
-    if (user && isLoginDialogOpen) {
-      setIsLoginDialogOpen(false);
-    }
-  }, [user, isLoginDialogOpen]);
+  // useEffect for closing login dialog removed
 
   return (
     <nav
@@ -121,7 +113,7 @@ export default function Navbar() {
           >
             {siteConfig.name}
           </Link>
-          <div className="flex items-center space-x-2 sm:space-x-4 ml-auto"> {/* Adjusted spacing for smaller screens */}
+          <div className="flex items-center space-x-2 sm:space-x-4 ml-auto">
             <div className="hidden md:flex items-center space-x-4">
               {navItems.map((item) => (
                 <Link
@@ -141,10 +133,10 @@ export default function Navbar() {
                 }
               }}
               className="hidden md:flex"
-              size="sm" // Adjusted size
+              size="sm"
               disabled={isLoadingResumeUrl || !dynamicResumeUrl}
             >
-              <Download className="mr-2 h-4 w-4" /> {/* Added margin */}
+              <Download className="mr-2 h-4 w-4" />
               {isLoadingResumeUrl ? "Loading..." : "Resume"}
             </Button>
             <Button
@@ -166,33 +158,16 @@ export default function Navbar() {
               <span className="sr-only">Toggle theme</span>
             </Button>
 
-            {/* Auth Button / Dialog */}
+            {/* Auth Button: Only Logout button if user is logged in */}
             {!authIsLoading && (
               <>
-                {user ? (
+                {user && (
                   <Button variant="ghost" size="icon" onClick={signOut} title="Logout">
                     <LogOut className="h-[1.2rem] w-[1.2rem]" />
                     <span className="sr-only">Logout</span>
                   </Button>
-                ) : (
-                  <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="ghost" size="icon" title="Login">
-                        <LogIn className="h-[1.2rem] w-[1.2rem]" />
-                        <span className="sr-only">Login</span>
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                      <DialogHeader>
-                        <DialogTitle>Admin Login</DialogTitle>
-                        <DialogDescription>
-                          Enter your credentials to access the editing features.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <LoginForm />
-                    </DialogContent>
-                  </Dialog>
                 )}
+                {/* Login trigger and dialog removed from here */}
               </>
             )}
 
@@ -211,7 +186,7 @@ export default function Navbar() {
               </SheetTrigger>
               <SheetContent
                 side="right"
-                className="bg-slate-900 bg-opacity-85 w-[250px] sm:w-[300px]" // Adjusted width
+                className="bg-slate-900 bg-opacity-85 w-[250px] sm:w-[300px]"
               >
                 <SheetHeader>
                   <SheetTitle>Navigation</SheetTitle>
@@ -223,7 +198,6 @@ export default function Navbar() {
                       href={item.href}
                       onClick={(e) => {
                         handleLinkScroll(e, item.href);
-                        // Consider closing the sheet here: find a way to get Sheet's setOpen if needed
                       }}
                       className="text-sm font-medium transition-all hover:text-primary hover:translate-x-2"
                     >
@@ -242,25 +216,15 @@ export default function Navbar() {
                     <Download className="mr-2 h-4 w-4" />
                     {isLoadingResumeUrl ? "Loading..." : "Resume"}
                   </Button>
+                  {/* Auth buttons in mobile menu */}
                   {!authIsLoading && (
                     <>
-                      {user ? (
+                      {user && (
                         <Button variant="outline" onClick={signOut} className="w-full mt-2">
                           <LogOut className="mr-2 h-4 w-4" /> Logout
                         </Button>
-                      ) : (
-                        // For mobile, trigger the same dialog.
-                        // To embed LoginForm directly in Sheet, you'd pass setIsLoginDialogOpen(false) to LoginForm
-                        // and LoginForm would call it on successful login.
-                        // Or, simply use the DialogTrigger as done for desktop.
-                        <Button
-                          variant="outline"
-                          onClick={() => setIsLoginDialogOpen(true)}
-                          className="w-full mt-2"
-                        >
-                          <LogIn className="mr-2 h-4 w-4" /> Login
-                        </Button>
                       )}
+                      {/* Login button removed from mobile menu */}
                     </>
                   )}
                 </nav>

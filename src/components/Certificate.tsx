@@ -144,15 +144,19 @@ export default function Certificate({ certificateData }: CertificateProps) {
 							imageUrlToDelete
 						);
 					}
-				} catch (fileDeleteError: any) {
+				} catch (fileDeleteError: unknown) {
 					// Catches network errors or issues before response is received
 					console.error(
 						"Error calling file delete API (network or setup issue):",
 						fileDeleteError
 					);
+					const errorMessage =
+						fileDeleteError instanceof Error
+							? fileDeleteError.message
+							: String(fileDeleteError);
 					toast({
 						title: "Warning",
-						description: `Certificate record deleted, but encountered an error trying to delete file: ${fileDeleteError.message}. You may need to delete it manually from storage.`,
+						description: `Certificate record deleted, but encountered an error trying to delete file: ${errorMessage}. You may need to delete it manually from storage.`,
 						variant: "default",
 						duration: 7000,
 					});
@@ -166,11 +170,15 @@ export default function Certificate({ certificateData }: CertificateProps) {
 			router.refresh();
 			setIsDeleteDialogOpen(false);
 			setCertificateToDelete(null);
-		} catch (error: any) {
+		} catch (error: unknown) {
 			// This will catch dbError or any other error before file deletion attempt
+			const errorMessage =
+				error instanceof Error
+					? error.message
+					: "An unknown error occurred.";
 			toast({
 				title: "Error",
-				description: error.message || "Could not delete certificate.",
+				description: errorMessage,
 				variant: "destructive",
 			});
 		}
@@ -363,9 +371,10 @@ export default function Certificate({ certificateData }: CertificateProps) {
 					<DialogHeader>
 						<DialogTitle>Confirm Deletion</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to delete the certificate: "
-							{certificateToDelete?.title}"? This action cannot be
-							undone.
+							Are you sure you want to delete the certificate:
+							&quot;
+							{certificateToDelete?.title}&quot;? This action
+							cannot be undone.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>

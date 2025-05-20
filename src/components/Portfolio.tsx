@@ -83,64 +83,86 @@ export default function Portfolio({ projectsData }: PortfolioProps) {
 			// For now, we'll just delete the database record.
 			// if (projectToDelete.image_url) {
 			//   const path = projectToDelete.image_url.substring(projectToDelete.image_url.lastIndexOf('/') + 1); // Example: extract filename
-    //   await supabaseBrowserClient.storage.from('project-images').remove([path]);
-    // }
+			//   await supabaseBrowserClient.storage.from('project-images').remove([path]);
+			// }
 
-    const imageUrlToDelete = projectToDelete.image_url; // Store before DB delete potentially clears projectToDelete
+			const imageUrlToDelete = projectToDelete.image_url; // Store before DB delete potentially clears projectToDelete
 
-    const { error: dbError } = await supabaseBrowserClient
-      .from("projects")
-      .delete()
-      .eq("id", projectToDelete.id)
-      .eq("user_id", user.id);
+			const { error: dbError } = await supabaseBrowserClient
+				.from("projects")
+				.delete()
+				.eq("id", projectToDelete.id)
+				.eq("user_id", user.id);
 
-    if (dbError) throw dbError;
+			if (dbError) throw dbError;
 
-    // If database record deletion is successful, and there was an image URL, delete the local file
-    if (imageUrlToDelete) {
-      try {
-        const response = await fetch('/api/upload', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ fileUrl: imageUrlToDelete, type: 'project' }), // Pass 'project' as type
-          credentials: 'include',
-        });
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error("Failed to delete project image file from local storage:", errorData.error);
-          toast({
-            title: "Warning",
-            description: `Project record deleted, but failed to delete image file: ${errorData.error || 'Unknown error'}. You may need to delete it manually.`,
-            variant: "default",
-            duration: 7000,
-          });
-        } else {
-          console.log("Successfully deleted project image file from local storage:", imageUrlToDelete);
-        }
-      } catch (fileDeleteError: any) {
-        console.error("Error calling project image file delete API:", fileDeleteError);
-        toast({
-          title: "Warning",
-          description: `Project record deleted, but encountered an error trying to delete image file: ${fileDeleteError.message}. You may need to delete it manually.`,
-          variant: "default",
-          duration: 7000,
-        });
-      }
-    }
+			// If database record deletion is successful, and there was an image URL, delete the local file
+			if (imageUrlToDelete) {
+				try {
+					const response = await fetch("/api/upload", {
+						method: "DELETE",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify({
+							fileUrl: imageUrlToDelete,
+							type: "project",
+						}), // Pass 'project' as type
+						credentials: "include",
+					});
+					if (!response.ok) {
+						const errorData = await response.json();
+						console.error(
+							"Failed to delete project image file from local storage:",
+							errorData.error
+						);
+						toast({
+							title: "Warning",
+							description: `Project record deleted, but failed to delete image file: ${
+								errorData.error || "Unknown error"
+							}. You may need to delete it manually.`,
+							variant: "default",
+							duration: 7000,
+						});
+					} else {
+						console.log(
+							"Successfully deleted project image file from local storage:",
+							imageUrlToDelete
+						);
+					}
+				} catch (fileDeleteError: unknown) {
+					console.error(
+						"Error calling project image file delete API:",
+						fileDeleteError
+					);
+					const errorMessage =
+						fileDeleteError instanceof Error
+							? fileDeleteError.message
+							: String(fileDeleteError);
+					toast({
+						title: "Warning",
+						description: `Project record deleted, but encountered an error trying to delete image file: ${errorMessage}. You may need to delete it manually.`,
+						variant: "default",
+						duration: 7000,
+					});
+				}
+			}
 
-    toast({
-      title: "Success",
-      description: "Project deleted successfully.",
-    });
-    router.refresh();
-    setIsDeleteDialogOpen(false);
-    setProjectToDelete(null);
-  } catch (error: any) { // This will catch dbError or any other error before file deletion attempt
-    toast({
-      title: "Error",
-      description: error.message || "Could not delete project.",
+			toast({
+				title: "Success",
+				description: "Project deleted successfully.",
+			});
+			router.refresh();
+			setIsDeleteDialogOpen(false);
+			setProjectToDelete(null);
+		} catch (error: unknown) {
+			const errorMessage =
+				error instanceof Error
+					? error.message
+					: "An unknown error occurred.";
+			toast({
+				title: "Error",
+				description: errorMessage,
 				variant: "destructive",
 			});
 		}
@@ -333,9 +355,9 @@ export default function Portfolio({ projectsData }: PortfolioProps) {
 					<DialogHeader>
 						<DialogTitle>Confirm Deletion</DialogTitle>
 						<DialogDescription>
-							Are you sure you want to delete the project: "
-							{projectToDelete?.title}"? This action cannot be
-							undone.
+							Are you sure you want to delete the project: &quot;
+							{projectToDelete?.title}&quot;? This action cannot
+							be undone.
 						</DialogDescription>
 					</DialogHeader>
 					<DialogFooter>
