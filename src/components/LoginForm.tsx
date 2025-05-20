@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 // import { useAuth } from '@/contexts/AuthContext'; // Not strictly needed here for login action itself
-import { supabase } from '@/lib/supabaseClient';
+import { supabaseBrowserClient as supabase } from '@/lib/supabaseClient';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -43,8 +43,11 @@ export const LoginForm = () => {
         // setEmail('');
         // setPassword('');
       }
-    } catch (e: any) {
-      const errorMessage = e.message || 'An unexpected error occurred during login.';
+    } catch (e: unknown) {
+      let errorMessage = 'An unexpected error occurred during login.';
+      if (e instanceof Error) {
+        errorMessage = e.message;
+      }
       setError(errorMessage);
       toast({
         title: "Error",

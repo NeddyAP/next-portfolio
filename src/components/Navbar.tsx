@@ -19,11 +19,12 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
-  DialogFooter,
+  // DialogFooter, // Removed as it's unused
 } from "@/components/ui/dialog"; // Added Dialog components
 import { useAuth } from "@/contexts/AuthContext"; // Added useAuth
 import { LoginForm } from "@/components/LoginForm"; // Added LoginForm
-import { navItems, resumePath, siteConfig } from "@/data/navbarData";
+import { navItems, resumePath, siteConfig } from "@/data/navbarData"; // resumePath will be replaced by dynamic one
+import { supabaseBrowserClient } from "@/lib/supabaseClient"; // Import Supabase client
 
 export default function Navbar() {
   const { setTheme, theme } = useTheme();
@@ -31,9 +32,40 @@ export default function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false); // State for login dialog
+  const [dynamicResumeUrl, setDynamicResumeUrl] = useState<string | null>(null);
+  const [isLoadingResumeUrl, setIsLoadingResumeUrl] = useState(true);
 
   useEffect(() => {
     setMounted(true);
+
+    const fetchResumeUrl = async () => {
+      setIsLoadingResumeUrl(true);
+      try {
+        // Assuming there's one 'about_me' entry or we take the first one.
+        // Adjust if a specific user's resume is needed and user context is available for query.
+        const { data, error } = await supabaseBrowserClient
+          .from("about_me")
+          .select("resume_url")
+          .limit(1) // Fetches the first record
+          .single(); // Assumes a single record or you want the first one
+
+        if (error) {
+          console.error("Error fetching resume URL:", error);
+          setDynamicResumeUrl(resumePath); // Fallback to static path on error
+        } else if (data && data.resume_url) {
+          setDynamicResumeUrl(data.resume_url);
+        } else {
+          setDynamicResumeUrl(resumePath); // Fallback if no URL found
+        }
+      } catch (e) {
+        console.error("Exception fetching resume URL:", e);
+        setDynamicResumeUrl(resumePath); // Fallback
+      } finally {
+        setIsLoadingResumeUrl(false);
+      }
+    };
+
+    fetchResumeUrl();
 
     const handleScrollEvent = () => { // Renamed to avoid conflict with function name
       setScrolled(window.scrollY > 50);
@@ -103,12 +135,17 @@ export default function Navbar() {
               ))}
             </div>
             <Button
-              onClick={() => window.open(resumePath, "_blank")}
+              onClick={() => {
+                if (dynamicResumeUrl) {
+                  window.open(dynamicResumeUrl, "_blank");
+                }
+              }}
               className="hidden md:flex"
               size="sm" // Adjusted size
+              disabled={isLoadingResumeUrl || !dynamicResumeUrl}
             >
               <Download className="mr-2 h-4 w-4" /> {/* Added margin */}
-              Resume
+              {isLoadingResumeUrl ? "Loading..." : "Resume"}
             </Button>
             <Button
               variant="ghost"
@@ -194,13 +231,16 @@ export default function Navbar() {
                     </Link>
                   ))}
                   <Button
-                    onClick={() =>
-                      window.open(resumePath, "_blank")
-                    }
+                    onClick={() => {
+                      if (dynamicResumeUrl) {
+                        window.open(dynamicResumeUrl, "_blank");
+                      }
+                    }}
                     className="w-full mt-4"
+                    disabled={isLoadingResumeUrl || !dynamicResumeUrl}
                   >
                     <Download className="mr-2 h-4 w-4" />
-                    Resume
+                    {isLoadingResumeUrl ? "Loading..." : "Resume"}
                   </Button>
                   {!authIsLoading && (
                     <>

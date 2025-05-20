@@ -57,41 +57,32 @@ export type Database = {
       certificates: {
         Row: {
           certificate_image_url: string | null
-          created_at: string | null
-          credential_id: string | null
+          created_at: string
           credential_url: string | null
-          display_order: number | null
           id: string
           issue_date: string | null
-          issuing_organization: string | null
+          issuing_organization: string
           title: string
-          updated_at: string | null
           user_id: string
         }
         Insert: {
           certificate_image_url?: string | null
-          created_at?: string | null
-          credential_id?: string | null
+          created_at?: string
           credential_url?: string | null
-          display_order?: number | null
           id?: string
           issue_date?: string | null
-          issuing_organization?: string | null
+          issuing_organization: string
           title: string
-          updated_at?: string | null
           user_id: string
         }
         Update: {
           certificate_image_url?: string | null
-          created_at?: string | null
-          credential_id?: string | null
+          created_at?: string
           credential_url?: string | null
-          display_order?: number | null
           id?: string
           issue_date?: string | null
-          issuing_organization?: string | null
+          issuing_organization?: string
           title?: string
-          updated_at?: string | null
           user_id?: string
         }
         Relationships: []

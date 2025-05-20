@@ -18,7 +18,9 @@ import { AiOutlineLinux } from "react-icons/ai";
 import { BiLogoJavascript, BiLogoVisualStudio } from "react-icons/bi";
 
 // Define a more generic type for react-icons as they don't have a shared base props type like LucideProps
-type ReactIconProps = { className?: string; size?: string | number; title?: string;[key: string]: any; };
+// Changed [key: string]: any to [key: string]: unknown to satisfy no-explicit-any.
+// This might require type assertions where these props are used if they are not simple strings/numbers.
+type ReactIconProps = { className?: string; size?: string | number; title?: string;[key: string]: unknown; };
 
 export interface IconComponentProps extends LucideProps, ReactIconProps {}
 
