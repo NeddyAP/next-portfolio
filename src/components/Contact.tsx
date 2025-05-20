@@ -1,232 +1,63 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import emailjs from "@emailjs/browser";
-import { toast } from "@/hooks/use-toast";
-import { Database } from "@/types/supabase";
+// "use client"; // No longer strictly needs to be a client component if no hooks are used, but can remain.
 
-const isValidEmail = (email: string) => {
-	const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-	return emailRegex.test(email);
-};
+// import { useState, useEffect } from "react"; // No longer needed for form state
+// import { Button } from "@/components/ui/button"; // No longer needed for form
+// import { Input } from "@/components/ui/input"; // No longer needed for form
+// import { Textarea } from "@/components/ui/textarea"; // No longer needed for form
+// import emailjs from "@emailjs/browser"; // No longer needed
+// import { toast } from "@/hooks/use-toast"; // No longer needed for form feedback
+import { Database } from "@/types/supabase"; // Still needed for AboutMeProps
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"; // Import Card components
 
 // Define props for the component
-interface AboutMeProps {
-	aboutData: Database["public"]["Tables"]["about_me"]["Row"] | null;
+interface AboutMeProps { // Renaming to ContactProps might be more appropriate if this component is solely for contact
+  aboutData: Database["public"]["Tables"]["about_me"]["Row"] | null;
 }
 
 export default function Contact({ aboutData }: AboutMeProps) {
-	const [formData, setFormData] = useState({
-		name: "",
-		email: "",
-		message: "",
-	});
-	const [isLoading, setIsLoading] = useState(false);
-	const [cooldown, setCooldown] = useState(0);
+  // All form-related state and logic removed
 
-	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-	) => {
-		const { name, value } = e.target;
-		setFormData((prevData) => ({
-			...prevData,
-			[name]: value,
-		}));
-	};
-
-	useEffect(() => {
-		emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!);
-	}, []);
-
-	useEffect(() => {
-		if (cooldown > 0) {
-			const timer = setTimeout(() => {
-				setCooldown(cooldown - 1);
-			}, 1000);
-			return () => clearTimeout(timer);
-		}
-	}, [cooldown]);
-
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-
-		if (!isValidEmail(formData.email)) {
-			toast({
-				variant: "destructive",
-				title: "Invalid Email",
-				description: "Please enter a valid email address",
-				className:
-					"bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-800",
-			});
-			return;
-		}
-
-		if (cooldown > 0) {
-			toast({
-				variant: "destructive",
-				title: "Please wait",
-				description: `You can send another message in ${cooldown} seconds`,
-				className: "bg-white dark:bg-slate-950",
-			});
-			return;
-		}
-
-		setIsLoading(true);
-		try {
-			await emailjs.send(
-				process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-				process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
-				{
-					from_name: formData.name,
-					from_email: formData.email,
-					message: formData.message,
-				}
-			);
-
-			setFormData({ name: "", email: "", message: "" });
-			setCooldown(60);
-			toast({
-				variant: "default",
-				title: "✅ Success!",
-				description:
-					"Thank you for your message. I'll get back to you soon.",
-				className:
-					"bg-green-50 dark:bg-green-900 border-green-200 dark:border-green-800",
-			});
-		} catch (error) {
-			console.error("Error sending email:", error);
-			toast({
-				variant: "destructive",
-				title: "❌ Error",
-				description: "Failed to send message. Please try again later.",
-				className:
-					"bg-red-50 dark:bg-red-900 border-red-200 dark:border-red-800",
-			});
-		} finally {
-			setIsLoading(false);
-		}
-	};
-
-	const getButtonText = () => {
-		if (isLoading) return "Sending...";
-		if (cooldown > 0) return `Wait ${cooldown}s`;
-		return "Send Message";
-	};
-
-	return (
-		<section id="contact" className="space-y-6">
-			<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl justify-center flex text-slate-900 dark:text-slate-100">
-				Contact Me
-			</h2>
-			{/* Two-column layout container */}
-			<div className="flex flex-col md:flex-row gap-8 lg:gap-12 max-w-4xl mx-auto">
-				{/* Left Column: Contact Info */}
-				<div className="md:w-1/3 space-y-4">
-					<h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100">
-						Get in Touch
-					</h3>
-					<p className="text-slate-600 dark:text-slate-400">
-						Feel free to reach out directly via email or phone.
-					</p>
-					<div className="space-y-2">
-						<p className="text-slate-600 dark:text-slate-400">
-							<strong>Email:</strong>{" "}
-							<a
-								href={`mailto:${
-									aboutData?.contact_email ||
-									"neddy.prasetio@gmail.com"
-								}`}
-								className="underline hover:text-slate-900 dark:hover:text-slate-100"
-							>
-								{aboutData?.contact_email ||
-									"neddy.prasetio@gmail.com"}
-							</a>
-						</p>
-						<p className="text-slate-600 dark:text-slate-400">
-							<strong>Phone:</strong>{" "}
-							<a
-								href="tel:+6282125241014"
-								className="underline hover:text-slate-900 dark:hover:text-slate-100"
-							>
-								+62 821-2524-1014
-							</a>
-						</p>
-					</div>
-					<p className="text-slate-600 dark:text-slate-400">
-						Alternatively, use the form to send me a message.
-					</p>
-				</div>
-
-				{/* Right Column: Contact Form */}
-				<div className="md:w-2/3">
-					<form
-						onSubmit={handleSubmit}
-						className="space-y-6 shadow-sm bg-white dark:bg-slate-950 p-5 border border-slate-200 dark:border-slate-800 rounded-lg"
-					>
-						<div className="space-y-2">
-							<label
-								htmlFor="name"
-								className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-100"
-							>
-								Name
-							</label>
-							<Input
-								type="text"
-								id="name"
-								name="name"
-								value={formData.name}
-								onChange={handleChange}
-								required
-							/>
-						</div>
-						<div className="space-y-2">
-							<label
-								htmlFor="email"
-								className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-100"
-							>
-								Email
-							</label>
-							<Input
-								type="email"
-								id="email"
-								name="email"
-								value={formData.email}
-								onChange={handleChange}
-								required
-							/>
-						</div>
-						<div className="space-y-2">
-							<label
-								htmlFor="message"
-								className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-slate-100"
-							>
-								Message
-							</label>
-							<Textarea
-								id="message"
-								name="message"
-								value={formData.message}
-								onChange={handleChange}
-								required
-							/>
-						</div>
-						<div className="flex justify-end">
-							<Button
-								type="submit"
-								disabled={isLoading || cooldown > 0}
-								className={`min-w-[150px] ${
-									cooldown > 0 ? "bg-gray-500" : ""
-								}`}
-							>
-								{getButtonText()}
-							</Button>
-						</div>
-					</form>
-				</div>
-			</div>
-		</section>
-	);
+  return (
+    <section id="contact" className="py-12 md:py-16 lg:py-20">
+      <div className="container mx-auto px-4 md:px-6 text-center">
+        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-slate-900 dark:text-slate-100 mb-12">
+          Contact Me
+        </h2>
+        
+        <Card className="max-w-lg mx-auto shadow-lg">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Get in Touch</CardTitle>
+            <CardDescription className="pt-2">
+              I'm always open to discussing new projects, creative ideas, or opportunities.
+              Feel free to reach out directly.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-2 pb-6">
+            <div className="space-y-4">
+              {aboutData?.contact_email && (
+                <div className="flex items-center justify-center space-x-3 text-lg py-2 px-4 rounded-md border border-transparent hover:border-primary/20 hover:bg-primary/5 transition-colors duration-200">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6 text-primary flex-shrink-0"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                  <a
+                    href={`mailto:${aboutData.contact_email}`}
+                    className="text-slate-700 dark:text-slate-300 hover:text-primary dark:hover:text-primary hover:underline break-all"
+                  >
+                    {aboutData.contact_email}
+                  </a>
+                </div>
+              )}
+              {/* Phone number section removed as it's not in the about_me table schema */}
+              {!aboutData?.contact_email && ( // Check only for contact_email now
+                 <p className="text-slate-500 dark:text-slate-500">Contact email will be available soon.</p>
+              )}
+            </div>
+            <p className="mt-8 text-slate-500 dark:text-slate-500 text-sm">
+              Looking forward to hearing from you!
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+  );
 }
