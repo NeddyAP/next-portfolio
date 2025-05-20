@@ -1,313 +1,226 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir, stat, unlink } from "fs/promises";
-import path from "path";
+import path from "path"; // Still useful for getting extension
 import { cookies } from "next/headers";
-import { createServerClient, type CookieOptions } from "@supabase/ssr"; // Keep for auth, not for storage ops
+import { createServerClient, type CookieOptions } from "@supabase/ssr";
 
-async function ensureDirExists(dirPath: string) {
-	try {
-		await stat(dirPath);
-	} catch (error: unknown) {
-		if (
-			typeof error === "object" &&
-			error !== null &&
-			"code" in error &&
-			(error as { code: string }).code === "ENOENT"
-		) {
-			await mkdir(dirPath, { recursive: true });
-		} else {
-			throw error;
-		}
-	}
-}
+// Local file system functions (ensureDirExists, writeFile, stat, unlink) are no longer needed for Vercel deployment.
+// We will upload directly to Supabase Storage.
 
 const MAX_FILE_SIZE_MB = 5;
 const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
-const ALLOWED_PROFILE_TYPES = [
-	"image/jpeg",
-	"image/png",
-	"image/gif",
-	"image/webp",
-];
+// Mime types remain relevant for client-side and initial validation
+const ALLOWED_PROFILE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const ALLOWED_RESUME_TYPES = ["application/pdf"];
-const ALLOWED_PROJECT_IMAGE_TYPES = [
-	"image/jpeg",
-	"image/png",
-	"image/gif",
-	"image/webp",
-];
+const ALLOWED_PROJECT_IMAGE_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 const ALLOWED_CERTIFICATE_FILE_TYPES = ["application/pdf"]; // PDF only for certificates
 
+// Helper to get bucket name based on file type
+function getBucketName(fileType: string): string | null {
+  switch (fileType) {
+    case "profile": return "profile-images";
+    case "resume": return "resumes";
+    case "project": return "project-images";
+    case "certificate": return "certificate-files";
+    default: return null;
+  }
+}
+
 export async function POST(request: NextRequest) {
-	const cookieStore = await cookies();
-	const supabase = createServerClient(
-		// Used for session/auth only
-		process.env.NEXT_PUBLIC_SUPABASE_URL!,
-		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-		{
-			cookies: {
-				get(name: string) {
-					return cookieStore.get(name)?.value;
-				},
-				set(name: string, value: string, options: CookieOptions) {
-					cookieStore.set({ name, value, ...options });
-				},
-				remove(name: string, options: CookieOptions) {
-					cookieStore.set({ name, value: "", ...options });
-				},
-			},
-		}
-	);
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) { return cookieStore.get(name)?.value; },
+        set(name: string, value: string, options: CookieOptions) { cookieStore.set({ name, value, ...options }); },
+        remove(name: string, options: CookieOptions) { cookieStore.set({ name, value: "", ...options }); },
+      },
+    }
+  );
 
-	const {
-		data: { session },
-		error: sessionError,
-	} = await supabase.auth.getSession();
-	if (sessionError || !session) {
-		return NextResponse.json(
-			{ error: "Not authenticated", details: sessionError?.message },
-			{ status: 401 }
-		);
-	}
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError || !session) {
+    return NextResponse.json({ error: "Not authenticated", details: sessionError?.message }, { status: 401 });
+  }
 
-	try {
-		const formData = await request.formData();
-		const file = formData.get("file") as File | null;
-		const fileType = formData.get("type") as string | null;
-		const currentFileUrl = formData.get("currentFileUrl") as string | null; // Expecting local path e.g., /uploads/type/file.ext
+  try {
+    const formData = await request.formData();
+    const file = formData.get("file") as File | null;
+    const fileType = formData.get("type") as string | null;
+    const currentFileUrl = formData.get("currentFileUrl") as string | null; // This will be a Supabase public URL
 
-		if (!file) {
-			return NextResponse.json(
-				{ error: "No file provided." },
-				{ status: 400 }
-			);
-		}
+    if (!file) {
+      return NextResponse.json({ error: "No file provided." }, { status: 400 });
+    }
 
-		const validFileTypes = ["profile", "resume", "project", "certificate"];
-		if (!fileType || !validFileTypes.includes(fileType)) {
-			return NextResponse.json(
-				{
-					error: `Invalid file type specified. Must be one of: ${validFileTypes.join(
-						", "
-					)}.`,
-				},
-				{ status: 400 }
-			);
-		}
+    const validFileTypes = ["profile", "resume", "project", "certificate"];
+    if (!fileType || !validFileTypes.includes(fileType)) {
+      return NextResponse.json({ error: `Invalid file type specified. Must be one of: ${validFileTypes.join(", ")}.` }, { status: 400 });
+    }
 
-		if (file.size > MAX_FILE_SIZE_BYTES) {
-			return NextResponse.json(
-				{
-					error: `File size exceeds the limit of ${MAX_FILE_SIZE_MB}MB.`,
-				},
-				{ status: 400 }
-			);
-		}
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      return NextResponse.json({ error: `File size exceeds the limit of ${MAX_FILE_SIZE_MB}MB.` }, { status: 400 });
+    }
 
-		let allowedMimeTypes: string[] = [];
-		let expectedTypeDescription = "";
-		let relativeUploadDir = "";
+    let allowedMimeTypes: string[] = [];
+    let expectedTypeDescription = "";
+    
+    if (fileType === "profile") {
+      allowedMimeTypes = ALLOWED_PROFILE_TYPES;
+      expectedTypeDescription = "an image (JPEG, PNG, GIF, WebP)";
+    } else if (fileType === "resume") {
+      allowedMimeTypes = ALLOWED_RESUME_TYPES;
+      expectedTypeDescription = "a PDF";
+    } else if (fileType === "project") {
+      allowedMimeTypes = ALLOWED_PROJECT_IMAGE_TYPES;
+      expectedTypeDescription = "an image (JPEG, PNG, GIF, WebP)";
+    } else if (fileType === "certificate") {
+      allowedMimeTypes = ALLOWED_CERTIFICATE_FILE_TYPES;
+      expectedTypeDescription = "a PDF file";
+    }
 
-		if (fileType === "profile") {
-			allowedMimeTypes = ALLOWED_PROFILE_TYPES;
-			expectedTypeDescription = "an image (JPEG, PNG, GIF, WebP)";
-			relativeUploadDir = "uploads/profile-images";
-		} else if (fileType === "resume") {
-			allowedMimeTypes = ALLOWED_RESUME_TYPES;
-			expectedTypeDescription = "a PDF";
-			relativeUploadDir = "uploads/resumes";
-		} else if (fileType === "project") {
-			allowedMimeTypes = ALLOWED_PROJECT_IMAGE_TYPES;
-			expectedTypeDescription = "an image (JPEG, PNG, GIF, WebP)";
-			relativeUploadDir = "uploads/project-images";
-		} else if (fileType === "certificate") {
-			allowedMimeTypes = ALLOWED_CERTIFICATE_FILE_TYPES;
-			expectedTypeDescription = "a PDF file"; // Updated description
-			relativeUploadDir = "uploads/certificate-files"; // Local path for certificates
-		}
+    if (!allowedMimeTypes.includes(file.type)) {
+      return NextResponse.json({ error: `Invalid file format. Expected ${expectedTypeDescription}. Received ${file.type}` }, { status: 400 });
+    }
+    
+    const bucketName = getBucketName(fileType);
+    if (!bucketName) {
+      return NextResponse.json({ error: "Internal server error: Invalid file type for bucket mapping." }, { status: 500 });
+    }
 
-		if (!allowedMimeTypes.includes(file.type)) {
-			return NextResponse.json(
-				{
-					error: `Invalid file format. Expected ${expectedTypeDescription}. Received ${file.type}`,
-				},
-				{ status: 400 }
-			);
-		}
+    // Delete old file from Supabase Storage if currentFileUrl is provided
+    if (currentFileUrl) {
+      try {
+        const oldFileUrlObject = new URL(currentFileUrl);
+        const oldPathParts = oldFileUrlObject.pathname.split('/');
+        // Path is like /storage/v1/object/public/bucket-name/file-path
+        const oldBucketNameIndex = oldPathParts.indexOf(bucketName); 
+        if (oldBucketNameIndex !== -1 && oldBucketNameIndex < oldPathParts.length -1) {
+          const oldFilePathInBucket = oldPathParts.slice(oldBucketNameIndex + 1).join('/');
+          if (oldFilePathInBucket) {
+            console.log(`Attempting to delete old file from Supabase Storage: bucket='${bucketName}', path='${oldFilePathInBucket}'`);
+            const { error: deleteError } = await supabase.storage.from(bucketName).remove([oldFilePathInBucket]);
+            if (deleteError) {
+              console.warn(`Supabase: Could not delete old file ${oldFilePathInBucket} from bucket ${bucketName}:`, deleteError.message);
+            } else {
+              console.log(`Supabase: Successfully deleted old file ${oldFilePathInBucket} from bucket ${bucketName}`);
+            }
+          }
+        } else {
+           console.warn(`Supabase: Could not parse old file path from URL: ${currentFileUrl} for bucket ${bucketName}`);
+        }
+      } catch (e) {
+        console.warn(`Error processing old Supabase file URL for deletion: ${currentFileUrl}`, e);
+      }
+    }
 
-		if (!relativeUploadDir) {
-			return NextResponse.json(
-				{
-					error: "Internal server error: Upload directory not configured for this file type.",
-				},
-				{ status: 500 }
-			);
-		}
+    const extension = path.extname(file.name).toLowerCase();
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const safeUserId = session.user.id.replace(/[^a-zA-Z0-9-_]/g, "");
+    // Store files in a folder structure like: {fileType}/{userId}/{filename} for better organization if desired
+    // For simplicity here, just prefixing with fileType and userId:
+    const filenameInBucket = `${fileType}/${safeUserId}/${fileType}-${safeUserId}-${uniqueSuffix}${extension}`;
 
-		// ALL UPLOADS ARE LOCAL
-		const bytes = await file.arrayBuffer();
-		const buffer = Buffer.from(bytes);
-		const extension = path.extname(file.name).toLowerCase();
-		const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-		const safeUserId = session.user.id.replace(/[^a-zA-Z0-9-_]/g, "");
-		const filename = `${fileType}-${safeUserId}-${uniqueSuffix}${extension}`;
+    console.log(`Attempting to upload to Supabase Storage: bucket='${bucketName}', path='${filenameInBucket}'`);
+    const { error: uploadError } = await supabase.storage
+      .from(bucketName)
+      .upload(filenameInBucket, file, { cacheControl: '3600', upsert: false }); // upsert: false to avoid overwriting by mistake if path somehow collides
 
-		const uploadDir = path.join(process.cwd(), "public", relativeUploadDir);
-		await ensureDirExists(uploadDir);
-		const localFilePath = path.join(uploadDir, filename);
+    if (uploadError) {
+      console.error(`Supabase upload error to bucket ${bucketName}:`, uploadError);
+      if (uploadError.message.toLowerCase().includes('bucket not found')) {
+           return NextResponse.json({ error: `Supabase Storage error: Bucket '${bucketName}' not found. Please ensure it is created in your Supabase project.` }, { status: 500 });
+      }
+      throw new Error(`Supabase upload error: ${uploadError.message}`);
+    }
 
-		// Delete old local file if currentFileUrl (local path) is provided
-		if (currentFileUrl) {
-			try {
-				const oldFileLocalPath = path.join(
-					process.cwd(),
-					"public",
-					currentFileUrl.startsWith("/")
-						? currentFileUrl.substring(1)
-						: currentFileUrl
-				);
-				await stat(oldFileLocalPath); // Check if file exists
-				await unlink(oldFileLocalPath);
-				console.log(
-					`Successfully deleted old local file: ${oldFileLocalPath}`
-				);
-			} catch (e: unknown) {
-				if (
-					typeof e === "object" &&
-					e !== null &&
-					"code" in e &&
-					(e as { code?: string }).code !== "ENOENT"
-				) {
-					console.warn(
-						`Could not delete old local file ${currentFileUrl}:`,
-						e instanceof Error ? e.message : String(e)
-					);
-				}
-			}
-		}
+    const { data: publicUrlData } = supabase.storage.from(bucketName).getPublicUrl(filenameInBucket);
+    if (!publicUrlData || !publicUrlData.publicUrl) {
+      throw new Error('Could not get public URL for the uploaded file from Supabase Storage.');
+    }
+    
+    console.log(`File uploaded successfully to Supabase Storage. URL: ${publicUrlData.publicUrl}`);
+    return NextResponse.json(
+      { message: "File uploaded successfully to Supabase Storage!", url: publicUrlData.publicUrl },
+      { status: 200 }
+    );
 
-		await writeFile(localFilePath, buffer);
-		const publicUrl = `/${relativeUploadDir}/${filename}`; // Local public URL
-
-		return NextResponse.json(
-			{ message: "File uploaded successfully locally!", url: publicUrl },
-			{ status: 200 }
-		);
-	} catch (error: unknown) {
-		const errorMessage =
-			error instanceof Error
-				? error.message
-				: "An unknown error occurred during upload.";
-		console.error("Upload failed:", error);
-		return NextResponse.json({ error: errorMessage }, { status: 500 });
-	}
+  } catch (error: unknown) {
+    console.error("File upload API error:", error);
+    let errorMessage = "Error uploading file.";
+    if (error instanceof Error) {
+      errorMessage = error.message || "An unexpected error occurred during file upload.";
+    }
+    return NextResponse.json({ error: "Error uploading file.", details: errorMessage }, { status: 500 });
+  }
 }
 
 export async function DELETE(request: NextRequest) {
-	// This DELETE handler is for LOCAL FILES for ALL types
-	console.log(
-		"DELETE /api/upload (local file deletion) reached with method:",
-		request.method
-	);
-	const cookieStore = await cookies();
-	const supabase = createServerClient(
-		// Used for session/auth only
-		process.env.NEXT_PUBLIC_SUPABASE_URL!,
-		process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-		{
-			cookies: {
-				get(name: string) {
-					return cookieStore.get(name)?.value;
-				},
-				set(name: string, value: string, options: CookieOptions) {
-					cookieStore.set({ name, value, ...options });
-				},
-				remove(name: string, options: CookieOptions) {
-					cookieStore.set({ name, value: "", ...options });
-				},
-			},
-		}
-	);
+  console.log("DELETE /api/upload (Supabase file deletion) reached with method:", request.method);
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get(name: string) { return cookieStore.get(name)?.value; },
+        set(name: string, value: string, options: CookieOptions) { cookieStore.set({ name, value, ...options }); },
+        remove(name: string, options: CookieOptions) { cookieStore.set({ name, value: "", ...options }); },
+      },
+    }
+  );
 
-	const {
-		data: { session },
-		error: sessionError,
-	} = await supabase.auth.getSession();
-	if (sessionError || !session) {
-		return NextResponse.json(
-			{ error: "Not authenticated", details: sessionError?.message },
-			{ status: 401 }
-		);
-	}
+  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  if (sessionError || !session) {
+    return NextResponse.json({ error: "Not authenticated", details: sessionError?.message }, { status: 401 });
+  }
 
-	try {
-		const { fileUrl, type } = await request.json(); // fileUrl is a local path like /uploads/type/file.ext
+  try {
+    const { fileUrl, type } = await request.json(); // fileUrl is a Supabase public URL, type helps determine bucket
 
-		if (!fileUrl) {
-			// Type might not be strictly necessary if fileUrl is a full local path
-			return NextResponse.json(
-				{ error: "Missing fileUrl in request body" },
-				{ status: 400 }
-			);
-		}
+    if (!fileUrl || !type) {
+      return NextResponse.json({ error: 'Missing fileUrl or type in request body' }, { status: 400 });
+    }
+    
+    const bucketName = getBucketName(type);
+    if (!bucketName) {
+      return NextResponse.json({ error: `Invalid file type '${type}' for deletion.` }, { status: 400 });
+    }
 
-		// Construct the full local path to the file
-		// Ensure fileUrl starts with a slash and is relative to 'public'
-		const localPathToDelete = path.join(
-			process.cwd(),
-			"public",
-			fileUrl.startsWith("/") ? fileUrl.substring(1) : fileUrl
-		);
+    const urlObject = new URL(fileUrl);
+    const pathParts = urlObject.pathname.split('/');
+    // Example Supabase URL: https://<project_ref>.supabase.co/storage/v1/object/public/<bucket-name>/<file-path-in-bucket>
+    // We need to extract <file-path-in-bucket>
+    const bucketNameIndex = pathParts.indexOf(bucketName);
 
-		console.log(
-			`Attempting to delete local file: ${localPathToDelete} (type: ${
-				type || "N/A"
-			})`
-		);
+    if (bucketNameIndex === -1 || bucketNameIndex >= pathParts.length - 1) {
+      console.error("Could not extract file path from Supabase URL:", fileUrl, "Bucket name:", bucketName, "Path parts:", pathParts);
+      return NextResponse.json({ error: 'Could not determine file path from URL to delete from Supabase Storage.' }, { status: 400 });
+    }
+    const filePathInBucket = pathParts.slice(bucketNameIndex + 1).join('/');
 
-		try {
-			await stat(localPathToDelete); // Check if file exists
-			await unlink(localPathToDelete);
-			console.log(
-				`Successfully deleted local file: ${localPathToDelete}`
-			);
-			return NextResponse.json(
-				{ message: "File deleted successfully locally" },
-				{ status: 200 }
-			);
-		} catch (e: unknown) {
-			// Check if e is an object and has a 'code' property before accessing it
-			if (
-				typeof e === "object" &&
-				e !== null &&
-				"code" in e &&
-				e.code === "ENOENT"
-			) {
-				console.log(
-					`Local file not found, considered deleted: ${localPathToDelete}`
-				);
-				return NextResponse.json(
-					{ message: "File not found locally, considered deleted." },
-					{ status: 200 }
-				);
-			}
-			console.error(
-				`Error deleting local file ${localPathToDelete}:`,
-				e instanceof Error ? e.message : String(e)
-			);
-			const errorMessage =
-				e instanceof Error
-					? e.message
-					: "An unknown error occurred during deletion.";
-			throw new Error(`Failed to delete local file: ${errorMessage}`);
-		}
-	} catch (error: unknown) {
-		const errorMessage =
-			error instanceof Error
-				? error.message
-				: "An unknown error occurred.";
-		console.error("Upload failed:", error);
-		return NextResponse.json({ error: errorMessage }, { status: 500 });
-	}
+    if (!filePathInBucket) {
+      return NextResponse.json({ error: 'Empty file path extracted from Supabase URL for deletion.' }, { status: 400 });
+    }
+
+    console.log(`Attempting to delete from Supabase Storage: bucket='${bucketName}', path='${filePathInBucket}'`);
+    const { error: deleteError } = await supabase.storage.from(bucketName).remove([filePathInBucket]);
+
+    if (deleteError) {
+      console.error(`Supabase Storage: Could not delete file ${filePathInBucket} from bucket ${bucketName}:`, deleteError.message);
+      // If file not found, it's effectively deleted from our perspective.
+      if (deleteError.message.toLowerCase().includes('not found')) {
+        return NextResponse.json({ message: 'File not found in Supabase Storage, considered deleted.' }, { status: 200 });
+      }
+      throw new Error(`Failed to delete file from Supabase Storage: ${deleteError.message}`);
+    }
+    
+    console.log(`File deleted successfully from Supabase Storage: bucket='${bucketName}', path='${filePathInBucket}'`);
+    return NextResponse.json({ message: 'File deleted successfully from Supabase Storage' }, { status: 200 });
+  } catch (error: any) {
+    console.error('DELETE /api/upload (Supabase file) error:', error);
+    return NextResponse.json({ error: error.message || 'Failed to delete file from Supabase Storage.' }, { status: 500 });
+  }
 }
