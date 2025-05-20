@@ -10,7 +10,7 @@ dotenv.config({ path: path.resolve(__dirname, "../.env.local") });
 
 // --- IMPORTANT: USER CONFIGURATION REQUIRED ---
 // 1. Replace this with your actual Supabase User ID
-const USER_ID = "78e2efe2-19a1-4050-9431-993c071eddae"; // e.g., 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+const USER_ID = process.env.SUPABASE_USER_ID; // e.g., 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
 
 // 2. Copy and paste your data arrays from src/data/*.ts files into the sections below.
 //    Ensure the variable names match those used in the migration functions.
