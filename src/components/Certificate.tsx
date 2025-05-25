@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import Slider from "react-slick";
-import PDFViewer from "./PDFViewer"; // Assuming this can handle images too, or we might need an Image component
+import PDFViewer from "./PDFViewer";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { Tables } from "@/types/supabase";
+import { getCertificateImageProps, isPdfFile } from "@/lib/imageUtils";
 import { Button } from "@/components/ui/button";
 import {
 	Sheet,
@@ -307,9 +308,9 @@ export default function Certificate({ certificateData }: CertificateProps) {
 									</div>
 									{certificate.certificate_image_url && (
 										<div className="mt-4 w-full flex justify-center">
-											{certificate.certificate_image_url
-												.toLowerCase()
-												.endsWith(".pdf") ? (
+											{isPdfFile(
+												certificate.certificate_image_url
+											) ? (
 												<div className="w-full max-h-[100vh]">
 													<PDFViewer
 														pdfUrl={
@@ -331,9 +332,8 @@ export default function Certificate({ certificateData }: CertificateProps) {
 														}
 														alt={`Certificate for ${certificate.title}`}
 														fill
-														sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+														{...getCertificateImageProps()}
 														className="object-contain rounded-md"
-														priority={true}
 													/>
 												</div>
 											)}

@@ -1,25 +1,21 @@
 "use client";
 
-// "use client"; // No longer strictly needs to be a client component if no hooks are used, but can remain.
-
-// import { useState, useEffect } from "react"; // No longer needed for form state
-// import { Button } from "@/components/ui/button"; // No longer needed for form
-// import { Input } from "@/components/ui/input"; // No longer needed for form
-// import { Textarea } from "@/components/ui/textarea"; // No longer needed for form
-// import emailjs from "@emailjs/browser"; // No longer needed
-// import { toast } from "@/hooks/use-toast"; // No longer needed for form feedback
-import { Database } from "@/types/supabase"; // Still needed for AboutMeProps
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"; // Import Card components
+import { Database } from "@/types/supabase";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 
 // Define props for the component
-interface AboutMeProps { // Renaming to ContactProps might be more appropriate if this component is solely for contact
-  aboutData: Database["public"]["Tables"]["about_me"]["Row"] | null;
+interface ContactProps {
+	aboutData: Database["public"]["Tables"]["about_me"]["Row"] | null;
 }
 
-export default function Contact({ aboutData }: AboutMeProps) {
-  // All form-related state and logic removed
-
-  return (
+export default function Contact({ aboutData }: ContactProps) {
+	return (
 		<section id="contact" className="py-12 md:py-16 lg:py-20">
 			<div className="container mx-auto px-4 md:px-6 text-center">
 				<h2 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl text-slate-900 dark:text-slate-100 mb-12">
@@ -76,5 +72,5 @@ export default function Contact({ aboutData }: AboutMeProps) {
 				</Card>
 			</div>
 		</section>
-  );
+	);
 }

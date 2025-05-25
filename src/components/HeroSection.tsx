@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Database } from "@/types/supabase";
+import { getProfileImageProps } from "@/lib/imageUtils";
 
 // Define props for the component
 interface AboutMeProps {
@@ -31,9 +32,8 @@ export default function HeroSection({ aboutData }: AboutMeProps) {
 								}
 								alt="Neddy Avgha Prasetio profile picture"
 								fill
-								sizes="(max-width: 640px) 12rem, (max-width: 1024px) 16rem, 24rem"
+								{...getProfileImageProps()}
 								className="rounded-full object-cover border-4 border-primary dark:border-white/20"
-								priority
 							/>
 							<div className="absolute inset-0 rounded-full bg-gradient-to-br from-primary/10 to-transparent dark:from-white/10" />
 						</div>

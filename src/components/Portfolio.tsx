@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { getProjectImageProps } from "@/lib/imageUtils";
 import {
 	Card,
 	CardContent,
@@ -251,14 +252,17 @@ export default function Portfolio({ projectsData }: PortfolioProps) {
 							)}
 							<CardHeader className="p-0">
 								{project.image_url ? (
-									<Image
-										src={project.image_url}
-										alt={project.title || "Project image"}
-										width={400}
-										height={200}
-										className="w-full h-40 sm:h-48 object-cover rounded-t-lg"
-										priority={index < 3}
-									/>
+									<div className="relative w-full h-40 sm:h-48 overflow-hidden rounded-t-lg">
+										<Image
+											src={project.image_url}
+											alt={
+												project.title || "Project image"
+											}
+											fill
+											{...getProjectImageProps(index)}
+											className="object-cover transition-transform duration-300 hover:scale-105"
+										/>
+									</div>
 								) : (
 									<div className="w-full h-40 sm:h-48 bg-muted rounded-t-lg flex items-center justify-center">
 										<span className="text-muted-foreground text-sm">
