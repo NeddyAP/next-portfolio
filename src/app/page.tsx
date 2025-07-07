@@ -25,6 +25,7 @@ const MAIN_USER_ID = "78e2efe2-19a1-4050-9431-993c071eddae";
 
 // Helper function to create a Supabase server client for page.tsx.
 // This is used by the data fetching functions in this Server Component.
+// Cookie modifications are disabled to prevent "Cookies can only be modified in a Server Action or Route Handler" errors
 const getSupabaseServerClientForPage = async () => {
   const cookieStore = await cookies(); // Await here, as TS infers cookies() as Promise
   return createServerClient<Database>(
@@ -35,18 +36,13 @@ const getSupabaseServerClientForPage = async () => {
         get(name: string) {
           return cookieStore.get(name)?.value;
         },
-        set(name: string, value: string, options: CookieOptions) {
-          cookieStore.set(name, value, options);
+        set() {
+          // No-op: Cookie modifications are not allowed in Server Components
+          // This prevents the "Cookies can only be modified in a Server Action or Route Handler" error
         },
-        remove(name: string, options: CookieOptions) {
-          cookieStore.delete({
-            name,
-            path: options.path,
-            domain: options.domain,
-            secure: options.secure,
-            httpOnly: options.httpOnly,
-            sameSite: options.sameSite as 'lax' | 'strict' | 'none' | undefined,
-          });
+        remove() {
+          // No-op: Cookie modifications are not allowed in Server Components
+          // This prevents the "Cookies can only be modified in a Server Action or Route Handler" error
         },
       },
     }
