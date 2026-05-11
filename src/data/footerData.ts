@@ -1,14 +1,14 @@
-import { Github, Linkedin } from "lucide-react";
+import { FiGithub, FiLinkedin } from "react-icons/fi";
 
 export const socialLinks = [
   {
     name: "GitHub",
-    icon: Github,
+    icon: FiGithub,
     url: "https://github.com/neddyap",
   },
   {
     name: "LinkedIn",
-    icon: Linkedin,
+    icon: FiLinkedin,
     url: "https://linkedin.com/in/neddy-avgha-prasetio/",
   },
 ];

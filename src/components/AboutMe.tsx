@@ -3,7 +3,7 @@
 import { useState } from "react"; // Added
 import { useRouter } from "next/navigation"; // Added for router.refresh()
 import { motion } from "framer-motion";
-import GitHubCalendar from "react-github-calendar";
+import { GitHubCalendar } from "react-github-calendar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button"; // Added
 import {
