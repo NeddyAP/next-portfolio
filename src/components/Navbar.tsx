@@ -45,7 +45,7 @@ export default function Navbar() {
           .from("about_me")
           .select("resume_url")
           .limit(1)
-          .single();
+          .single<{ resume_url: string | null }>();
 
         if (error) {
           console.error("Error fetching resume URL:", error);

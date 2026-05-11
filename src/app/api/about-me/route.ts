@@ -84,7 +84,7 @@ export async function PUT(request: Request) {
     }
 
     // Prepare only the fields that are meant to be updated by this form
-    const updateData: Partial<Database['public']['Tables']['about_me']['Row']> = {};
+    const updateData: Database['public']['Tables']['about_me']['Update'] = {};
     if (bio !== undefined) updateData.bio = bio;
     if (contact_email !== undefined) updateData.contact_email = contact_email;
     if (github_url !== undefined) updateData.github_url = github_url;
@@ -102,7 +102,7 @@ export async function PUT(request: Request) {
     
     const { data, error } = await supabase
       .from('about_me')
-      .update(updateData)
+      .update(updateData as never)
       .eq('user_id', user_id); // Ensure we update the record for the correct user
 
     if (error) {

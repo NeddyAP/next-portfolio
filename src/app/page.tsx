@@ -6,7 +6,7 @@ import Portfolio from "@/components/Portfolio";
 import Certificate from "@/components/Certificate";
 // Removed: import { supabase } from "@/lib/supabaseClient";
 import { Database } from "@/types/supabase"; // Import Supabase types
-// import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
 // Define a type for the fetched about_me data

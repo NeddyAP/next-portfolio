@@ -172,7 +172,7 @@ export function EditCertificateForm({
 
 				response = await supabaseBrowserClient
 					.from("certificates")
-					.update(updateData)
+					.update(updateData as never)
 					.eq("id", certificate.id)
 					.eq("user_id", user.id);
 			} else {
@@ -190,7 +190,7 @@ export function EditCertificateForm({
 				};
 				response = await supabaseBrowserClient
 					.from("certificates")
-					.insert(insertData);
+					.insert(insertData as never);
 			}
 
 			const { error } = response;

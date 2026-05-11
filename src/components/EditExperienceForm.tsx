@@ -112,14 +112,14 @@ export function EditExperienceForm({
 				// Update existing experience
 				response = await supabaseBrowserClient
 					.from("experiences")
-					.update(experienceData)
+					.update(experienceData as never)
 					.eq("id", experience.id)
 					.eq("user_id", user.id);
 			} else {
 				// Create new experience
 				response = await supabaseBrowserClient
 					.from("experiences")
-					.insert(experienceData);
+					.insert(experienceData as never);
 			}
 
 			const { error } = response;

@@ -182,13 +182,13 @@ export function EditProjectForm({
 			if (project?.id) {
 				response = await supabaseBrowserClient
 					.from("projects")
-					.update(projectData)
+					.update(projectData as never)
 					.eq("id", project.id)
 					.eq("user_id", user.id);
 			} else {
 				response = await supabaseBrowserClient
 					.from("projects")
-					.insert(projectData);
+					.insert(projectData as never);
 			}
 
 			const { error } = response;
