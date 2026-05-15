@@ -20,6 +20,7 @@ export default function PDFViewer({ pdfUrl }: PDFViewerProps) {
 					<div className="flex flex-wrap items-center justify-center gap-2">
 						<button
 							onClick={() => setIsPreviewLoaded(true)}
+							aria-label="Load certificate PDF preview"
 							className="px-3 py-1 bg-blue-500 text-white rounded text-sm hover:opacity-90"
 						>
 							Load Preview
@@ -48,6 +49,7 @@ export default function PDFViewer({ pdfUrl }: PDFViewerProps) {
 					{/* Expand button */}
 					<button
 						onClick={() => setIsExpanded(true)}
+						aria-label="Open certificate PDF in fullscreen"
 						className="absolute top-2 right-2 px-3 py-1 bg-blue-500 text-white rounded text-sm opacity-80 hover:opacity-100"
 					>
 						Fullscreen
