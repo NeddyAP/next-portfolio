@@ -9,7 +9,6 @@ interface PDFViewerProps {
 export default function PDFViewer({ pdfUrl }: PDFViewerProps) {
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [isPreviewLoaded, setIsPreviewLoaded] = useState(false);
-	const [hasPdfLoadError, setHasPdfLoadError] = useState(false);
 
 	return (
 		<div className="relative">
@@ -37,21 +36,6 @@ export default function PDFViewer({ pdfUrl }: PDFViewerProps) {
 						</a>
 					</div>
 				</div>
-			) : hasPdfLoadError ? (
-				<div className="h-[240px] w-full border rounded-lg dark:border-gray-700 flex flex-col items-center justify-center gap-3 p-4 text-center">
-					<p className="text-sm text-muted-foreground">
-						Unable to preview this PDF in the browser.
-					</p>
-					<a
-						href={pdfUrl}
-						target="_blank"
-						rel="noopener noreferrer"
-						aria-label="Open certificate PDF in new tab"
-						className="px-3 py-1 border rounded text-sm hover:bg-accent"
-					>
-						Open PDF
-					</a>
-				</div>
 			) : (
 				<>
 					{/* Preview iframe */}
@@ -60,9 +44,17 @@ export default function PDFViewer({ pdfUrl }: PDFViewerProps) {
 							src={`${pdfUrl}#view=FitH`}
 							className="w-full h-full bg-white"
 							title="Certificate PDF preview"
-							onError={() => setHasPdfLoadError(true)}
 						/>
 					</div>
+					<a
+						href={pdfUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label="Open certificate PDF in new tab"
+						className="absolute top-2 left-2 px-3 py-1 border rounded text-sm bg-background/90 hover:bg-accent"
+					>
+						Open PDF
+					</a>
 
 					{/* Expand button */}
 					<button
@@ -88,8 +80,16 @@ export default function PDFViewer({ pdfUrl }: PDFViewerProps) {
 						src={`${pdfUrl}#view=FitH`}
 						className="w-full h-full bg-white"
 						title="Certificate PDF fullscreen preview"
-						onError={() => setHasPdfLoadError(true)}
 					/>
+					<a
+						href={pdfUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label="Open certificate PDF in new tab"
+						className="absolute top-4 left-4 z-10 px-4 py-2 border rounded bg-background/90 hover:bg-accent text-sm"
+					>
+						Open PDF
+					</a>
 				</div>
 			)}
 		</div>
