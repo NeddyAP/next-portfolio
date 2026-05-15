@@ -278,7 +278,7 @@ export default function AboutMe({ aboutData }: AboutMeProps) {
 							return (
 								<motion.div
 									key={index}
-									className="group relative flex items-center justify-center p-4 rounded-lg bg-gray-800 bg-opacity-25 hover:bg-accent transition-colors text-4xl"
+									className="group relative flex items-center justify-center p-4 rounded-lg bg-muted hover:bg-accent transition-colors text-4xl"
 									title={skill.name}
 									initial={{ opacity: 0, y: 20 }}
 									whileInView={{ opacity: 1, y: 0 }}
@@ -390,7 +390,7 @@ export default function AboutMe({ aboutData }: AboutMeProps) {
 							return (
 								<motion.div
 									key={index}
-									className="group relative flex items-center justify-center p-4 rounded-lg bg-gray-800 bg-opacity-25 hover:bg-accent transition-colors text-4xl"
+									className="group relative flex items-center justify-center p-4 rounded-lg bg-muted hover:bg-accent transition-colors text-4xl"
 									title={tool.name}
 									initial={{ opacity: 0, y: 20 }}
 									whileInView={{ opacity: 1, y: 0 }}
