@@ -29,6 +29,7 @@ export default function PDFViewer({ pdfUrl }: PDFViewerProps) {
 							href={pdfUrl}
 							target="_blank"
 							rel="noopener noreferrer"
+							aria-label="Open certificate PDF in new tab"
 							className="px-3 py-1 border rounded text-sm hover:bg-accent"
 						>
 							Open PDF
